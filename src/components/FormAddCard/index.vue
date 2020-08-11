@@ -1,10 +1,11 @@
 <template>
   <el-form
+    ref="formAddCard"
+    :disabled="submitting"
     :model="model"
     :rules="rules"
     label-position="top"
-    class="form-add-paymethod"
-    ref="model"
+    class="form-add-card"
     label-width="120px"
   >
     <div class="credit-card" :style="getCreditCardStyle">
@@ -22,63 +23,69 @@
       />
       <el-form-item
         label="Номер карты"
-        prop="paymethod"
+        prop="cardNumber"
         class="credit-card__form-item"
       >
         <el-input
-          v-model="model.paymethod"
+          v-model="model.cardNumber"
+          v-mask="'#### #### #### ####'"
+          masked="true"
           :autofocus="true"
           :debounce="200"
           class="credit-card__form-input"
         ></el-input>
       </el-form-item>
     </div>
+
+    <el-form-item class="form-add-card__actions">
+      <el-button
+        :loading="submitting"
+        type="primary"
+        @click="onSubmit('formAddCard')"
+        >Добавить</el-button
+      >
+      <el-button @click="toggleDialogPaymethod(false)">Отмена</el-button>
+    </el-form-item>
   </el-form>
 </template>
 
 <script>
+import { mask } from 'vue-the-mask';
+import cardValid from 'card-validator';
 import { fetchCardInfo } from '@/api/paymethod';
+import { mapActions } from 'vuex';
 
 export default {
+  name: 'FormAddCard',
+  directives: { mask },
   data() {
+    const validateCardNumber = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Введите номер карты'));
+      } else {
+        let numberValidation = cardValid.number(value.trim());
+        if (!numberValidation.isValid) {
+          callback(new Error('Неверно указан формат карты'));
+        }
+        callback();
+      }
+    };
     return {
+      submitting: false,
       creditCard: null,
       model: {
-        paymethod: null,
+        cardNumber: null,
       },
 
       rules: {
         cardNumber: [
           {
-            required: true,
-            message: 'Вам нужно заполнить это поле',
-            trigger: 'blur',
-          },
-          {
-            min: 3,
-            max: 100,
-            message: 'Кол-во символов от 3 до 100',
-            trigger: 'blur',
-          },
-        ],
-        webmoney: [
-          {
-            required: true,
-            message: 'Вам нужно заполнить это поле',
+            validator: validateCardNumber,
             trigger: 'blur',
           },
         ],
       },
     };
-  },
-
-  watch: {
-    'model.paymethod'(newValue) {
-      if (newValue && newValue.length < 6) {
-        return;
-      }
-      this.fetchDataCardInfo(newValue);
-    },
   },
 
   computed: {
@@ -103,7 +110,17 @@ export default {
     },
   },
 
+  watch: {
+    'model.paymethod'(newValue) {
+      if (newValue && newValue.length < 6) {
+        return;
+      }
+      //this.fetchDataCardInfo(newValue);
+    },
+  },
+
   methods: {
+    ...mapActions('profile', ['toggleDialogPaymethod']),
     fetchDataCardInfo(query) {
       fetchCardInfo(query)
         .then(data => {
@@ -128,18 +145,46 @@ export default {
             brandLogoOriginalSvg,
             bankName,
           };
-
-          console.log('this.creditCard', this.creditCard);
         })
         .catch(err => {
           console.log(err);
         });
+    },
+
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+
+    onSubmit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) return;
+        this.submitting = true;
+
+        // place for async post request
+
+        this.$notify({
+          title: 'Внимание',
+          message: 'Привязка успешно выполнена',
+          type: 'success',
+          duration: 4000,
+        });
+        this.submitting = false;
+        this.resetForm(formName);
+        this.toggleDialogPaymethod(false);
+      });
     },
   },
 };
 </script>
 
 <style lang="scss">
+.form-add-card {
+  position: relative;
+
+  &__actions {
+    margin-top: 20px;
+  }
+}
 .credit-card {
   width: 100%;
   background: rgba(230, 230, 230, 0.77);

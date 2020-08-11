@@ -67,6 +67,22 @@ export const constantRoutes = [
   },
 
   {
+    path: '/terms',
+    component: Layout,
+    redirect: '/terms/index',
+    children: [
+      {
+        path: '/terms',
+        component: () => import('@/views/terms/index'),
+        name: 'Terms',
+        meta: { title: 'Лицензионное соглашение' },
+      },
+    ],
+
+    hidden: true,
+  },
+
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,

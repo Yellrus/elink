@@ -33,6 +33,7 @@ const initialState = {
 
 const state = {
   payments: initialState.payments,
+  dialogAddPaymethod: false,
 };
 
 const getters = {
@@ -52,11 +53,22 @@ const mutations = {
   SET_ROLES: (state, roles) => {
     state.roles = roles;
   },
+
+  TOGGLE_DIALOG_ADD_PAYMETHOD: (state, payload) => {
+    state.dialogAddPaymethod = payload;
+  },
+};
+
+const actions = {
+  toggleDialogPaymethod({ commit }, payload) {
+    commit('TOGGLE_DIALOG_ADD_PAYMETHOD', payload);
+  },
 };
 
 export default {
   namespaced: true,
   state,
   mutations,
+  actions,
   getters,
 };

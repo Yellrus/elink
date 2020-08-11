@@ -20,3 +20,20 @@
 .el-form-item {
   margin-bottom: 26px;
 }
+
+// notification
+.el-notification {
+  @media (max-width: $mq-iphone5) {
+    width: 100%;
+    max-width: 290px;
+  }
+}
+
+.el-input__prefix {
+  left: 12px;
+  top: 2px;
+}
+
+.el-input--prefix .el-input__inner {
+  padding-left: 35px;
+}

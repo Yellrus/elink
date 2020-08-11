@@ -33,9 +33,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/variables.scss';
 .selected-paymethod {
   width: 100%;
-  max-width: 222px;
+  max-width: 241px;
   min-height: 112px;
   padding: 10px;
   display: flex;
@@ -46,6 +47,11 @@ export default {
   border: 1px solid #ebeef5;
   box-shadow: 1px 17px 7px -15px #dcdfe6;
   background-color: #f5f7fa;
+
+  @media (max-width: $mq-mobile) {
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   &__icon {
     &--creditCard {

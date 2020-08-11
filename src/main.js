@@ -1,12 +1,10 @@
 import Vue from 'vue';
+import 'sanitize.css';
 import App from './App.vue';
 import store from './store';
 import router from './router';
-import 'sanitize.css';
 import './plugins/element.js';
-import 'nprogress/nprogress.css';
 import '@/styles/index.scss'; // global css
-import './plugins/HTTP.js';
 
 import './permission'; // permission control
 

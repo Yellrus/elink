@@ -26,6 +26,12 @@ import {
   Col,
   Card,
   Avatar,
+  Tabs,
+  TabPane,
+  Loading,
+  Notification,
+  Message,
+  Drawer,
   Scrollbar,
 } from 'element-ui';
 import lang from 'element-ui/lib/locale/lang/ru-RU';
@@ -59,4 +65,11 @@ Vue.use(Col);
 Vue.use(Card);
 Vue.use(Dialog);
 Vue.use(Avatar);
+Vue.use(Tabs);
+Vue.use(TabPane);
+Vue.use(Drawer);
+Vue.use(Loading);
 Vue.use(Scrollbar);
+
+Vue.prototype.$notify = Notification;
+Vue.prototype.$message = Message;
