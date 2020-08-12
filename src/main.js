@@ -6,12 +6,26 @@ import router from './router';
 import './plugins/element.js';
 import '@/styles/index.scss'; // global css
 
-import './permission'; // permission control
+import './permission';
+import { getToken } from '@/utils/auth'; // permission control
 
 Vue.config.productionTip = false;
+
+async function initState(app) {
+  return new Promise(function(resolve) {
+    let token = getToken();
+    if (token) {
+      app.$store.dispatch('profile/getInfo');
+    }
+    resolve();
+  });
+}
 
 new Vue({
   router,
   store,
+  async created() {
+    await initState(this).then(() => {});
+  },
   render: h => h(App),
 }).$mount('#app');

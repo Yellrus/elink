@@ -52,7 +52,7 @@
         </svg>
       </div>
 
-      <el-button type="success">Авторизоваться</el-button>
+      <el-button type="success" @click="login">Авторизоваться</el-button>
     </div>
   </div>
 </template>
@@ -110,6 +110,10 @@ export default {
         }
         return acc;
       }, {});
+    },
+
+    login() {
+      window.location.href = 'http://172.16.29.168:99/login';
     },
   },
 };

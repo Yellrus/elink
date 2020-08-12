@@ -83,6 +83,12 @@ export const constantRoutes = [
   },
 
   {
+    path: '/auth-work',
+    component: () => import('@/views/login/auth-work'),
+    hidden: true,
+  },
+
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,

@@ -15,11 +15,14 @@
         trigger="click"
       >
         <div class="avatar-wrapper">
-          <span v-if="device !== 'mobile'" class="avatar-name"
-            >Руслан Наманов</span
+          <span
+            v-if="device !== 'mobile' && isLoadedProfile"
+            class="avatar-name"
+            >{{ profile.FirstName ? profile.FirstName : wmid }}</span
           >
           <el-avatar
-            src="https://source.unsplash.com/random/100x100"
+            :src="isLoadedProfile ? userAvatar : ''"
+            alt="WebMoney login"
             :size="40"
             @error="errorHandler"
           >
@@ -31,25 +34,13 @@
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/index">
-            <el-dropdown-item>Прфоиль</el-dropdown-item>
+            <el-dropdown-item>Профиль</el-dropdown-item>
           </router-link>
           <router-link to="/">
             <el-dropdown-item>Главная</el-dropdown-item>
           </router-link>
-          <a
-            target="_blank"
-            href="https://github.com/PanJiaChen/vue-element-admin/"
-          >
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://panjiachen.github.io/vue-element-admin-site/#/"
-          >
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display:block;">Выйти</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -61,6 +52,7 @@
 import { mapGetters, mapState } from 'vuex';
 import Breadcrumb from '@/components/Breadcrumb';
 import Hamburger from '@/components/Hamburger';
+import { getUserWMAvatar } from '../../utils/profile';
 
 export default {
   components: {
@@ -68,10 +60,16 @@ export default {
     Hamburger,
   },
   computed: {
-    ...mapGetters(['sidebar', 'device']),
+    ...mapGetters(['sidebar', 'device', 'wmid']),
     ...mapState({
       device: state => state.app.device,
+      isLoadedProfile: state => state.profile.isLoaded,
+      profile: state => state.profile,
     }),
+
+    userAvatar() {
+      return getUserWMAvatar(this.wmid);
+    },
   },
   methods: {
     toggleSideBar() {
@@ -80,10 +78,10 @@ export default {
     errorHandler() {
       return true;
     },
-    // async logout() {
-    //   await this.$store.dispatch('user/logout');
-    //   this.$router.push(`/login?redirect=${this.$route.fullPath}`);
-    // },
+    async logout() {
+      await this.$store.dispatch('user/logout');
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+    },
   },
 };
 </script>

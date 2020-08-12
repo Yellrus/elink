@@ -1,3 +1,5 @@
+import { getInfo } from '@/api/profile';
+
 const initialState = {
   payments: [
     {
@@ -32,26 +34,29 @@ const initialState = {
 };
 
 const state = {
+  wmid: null,
+  profile: null,
   payments: initialState.payments,
   dialogAddPaymethod: false,
+  isLoaded: false,
 };
 
 const getters = {
   getPayMethodsOfType: state => type =>
     state.payments.filter(x => x.Paymethod === type),
-  // getPayMethod: (state, getters) => id =>
-  //   getters.getPayments && getters.getPayments.find(x => x.Id === id),
 };
 
 const mutations = {
-  SET_TOKEN: (state, token) => {
-    state.token = token;
-  },
   SET_WMID: (state, wmid) => {
     state.wmid = wmid;
   },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles;
+
+  SET_PROFILE: (state, profile) => {
+    state.profile = profile;
+  },
+
+  SET_PROFILE_LOADED: (state, payload) => {
+    state.isLoaded = payload;
   },
 
   TOGGLE_DIALOG_ADD_PAYMETHOD: (state, payload) => {
@@ -62,6 +67,24 @@ const mutations = {
 const actions = {
   toggleDialogPaymethod({ commit }, payload) {
     commit('TOGGLE_DIALOG_ADD_PAYMETHOD', payload);
+  },
+
+  // get user info
+  getInfo({ commit }) {
+    return new Promise((resolve, reject) => {
+      getInfo()
+        .then(response => {
+          const { Profile, UserLogin } = response;
+          commit('SET_PROFILE', Profile);
+          commit('SET_WMID', UserLogin);
+          commit('SET_PROFILE_LOADED', true);
+
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
   },
 };
 
