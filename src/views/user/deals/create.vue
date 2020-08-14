@@ -522,9 +522,9 @@ export default {
     },
 
     onInputAmount() {
-      if (this.numberValue > this.maxAmount) return;
+      if (this.numberValue && this.numberValue > this.maxAmount) return;
 
-      this.debounseGetCommission(this.numberValue);
+      this.debounseGetCommission(this.numberValue || 0);
     },
 
     getLastPaymethod() {
