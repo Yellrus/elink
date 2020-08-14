@@ -1,13 +1,15 @@
 <template>
-  <div v-if="isActive" class="payment-add-btn">
+  <div v-if="isActive" class="payment-add-btn" @click="() => toggleDialogPaymethod(true)">
     <span class="payment-add-btn__item">
       <el-icon class="el-icon-plus"></el-icon>
     </span>
-    <span class="payment-add-btn__title">Добавить {{ titlePayment }}</span>
+    <span class="payment-add-btn__title">Добавить новую карту</span>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'PaymentAddBtn',
   props: {
@@ -15,23 +17,10 @@ export default {
       type: Boolean,
       default: false,
     },
-    currentType: {
-      type: String,
-      default: 'WebMoney',
-    },
   },
 
-  computed: {
-    titlePayment() {
-      if (this.currentType === 'Cards') {
-        return 'новую карту';
-      }
-      if (this.currentType === 'WebMoney') {
-        return 'новый кошелёк';
-      }
-
-      return '';
-    },
+  methods: {
+    ...mapActions('profile', ['toggleDialogPaymethod']),
   },
 };
 </script>
@@ -39,8 +28,8 @@ export default {
 <style lang="scss" scoped>
 .payment-add-btn {
   position: relative;
-  width: 160px;
-  min-height: 96px;
+  width: 210px;
+  min-height: 112px;
   background-color: #fff;
   box-shadow: 1px 6px 15px 3px hsl(0deg 0% 79% / 20%);
   border-radius: 6px;

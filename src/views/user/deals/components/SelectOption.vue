@@ -1,7 +1,7 @@
 <template>
   <div class="payment-option">
     <CreditCardLogo
-      v-if="paymethod.Paymethod === 'Cards'"
+      v-if="paymethod.Paymethod === 'Cards' || paymethod.Paymethod === 'CardsTest'"
       class="payment-option__icon payment-option__icon--creditCard"
     />
     <WebmoneyLogo

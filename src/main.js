@@ -16,6 +16,7 @@ async function initState(app) {
     let token = getToken();
     if (token) {
       app.$store.dispatch('profile/getInfo');
+      app.$store.dispatch('dictionary/getDictionary');
     }
     resolve();
   });

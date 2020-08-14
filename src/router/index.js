@@ -25,12 +25,13 @@ export const constantRoutes = [
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
+    meta: { noCache: true },
     children: [
       {
-        path: 'index',
+        path: '/profile',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: 'Профиль', icon: 'user-solid' },
+        meta: { title: 'Профиль', icon: 'user-solid', noCache: true },
       },
     ],
   },
@@ -98,6 +99,18 @@ export const constantRoutes = [
     path: '/404',
     hidden: true,
     component: () => import('@/views/error-page/404'),
+  },
+
+  {
+    path: '/500',
+    hidden: true,
+    component: () => import('@/views/error-page/500'),
+  },
+
+  {
+    path: '/401',
+    hidden: true,
+    component: () => import('@/views/error-page/401'),
   },
 
   // 404 page must be placed at the end !!!

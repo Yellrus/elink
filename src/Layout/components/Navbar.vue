@@ -11,6 +11,7 @@
 
     <div class="right-menu">
       <el-dropdown
+        placement="bottom-start"
         class="avatar-container right-menu-item hover-effect"
         trigger="click"
       >
@@ -20,20 +21,11 @@
             class="avatar-name"
             >{{ profile.FirstName ? profile.FirstName : wmid }}</span
           >
-          <el-avatar
-            :src="isLoadedProfile ? userAvatar : ''"
-            alt="WebMoney login"
-            :size="40"
-            @error="errorHandler"
-          >
-            <img
-              src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"
-            />
-          </el-avatar>
+          <user-avatar />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
+          <router-link to="/profile">
             <el-dropdown-item>Профиль</el-dropdown-item>
           </router-link>
           <router-link to="/">
@@ -52,32 +44,29 @@
 import { mapGetters, mapState } from 'vuex';
 import Breadcrumb from '@/components/Breadcrumb';
 import Hamburger from '@/components/Hamburger';
-import { getUserWMAvatar } from '../../utils/profile';
+import UserAvatar from '../../components/UserAvatar/index';
 
 export default {
   components: {
+    UserAvatar,
     Breadcrumb,
     Hamburger,
   },
   computed: {
     ...mapGetters(['sidebar', 'device', 'wmid']),
+    ...mapGetters({
+      profile: 'profile/getProfile',
+    }),
     ...mapState({
       device: state => state.app.device,
       isLoadedProfile: state => state.profile.isLoaded,
-      profile: state => state.profile,
     }),
-
-    userAvatar() {
-      return getUserWMAvatar(this.wmid);
-    },
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar');
     },
-    errorHandler() {
-      return true;
-    },
+
     async logout() {
       await this.$store.dispatch('user/logout');
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
@@ -100,7 +89,7 @@ export default {
     float: left;
     cursor: pointer;
     transition: background 0.3s;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(#409eff, 0.2);
 
     &:hover {
       background: rgba(0, 0, 0, 0.025);
@@ -139,25 +128,30 @@ export default {
 
         &:hover {
           background: rgba(0, 0, 0, 0.025);
+
+          .el-icon-caret-bottom {
+            transform: translateY(2px);
+          }
         }
       }
     }
 
     .avatar-container {
-      margin-right: 30px;
 
       .avatar-wrapper {
         display: flex;
         align-items: center;
         margin-top: 5px;
         position: relative;
+        padding-right: 30px;
 
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
-          right: -20px;
+          right: 10px;
           top: 15px;
           font-size: 12px;
+          transition: transform 0.3s ease-in-out;
         }
       }
       .avatar-name {

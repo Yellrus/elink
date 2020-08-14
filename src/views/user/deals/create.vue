@@ -18,28 +18,29 @@
       >
         <el-row>
           <el-col type="flex" :xs="24" :sm="22" :md="22">
-            <el-form-item label="Описание товара или услуги" prop="name">
+            <el-form-item label="Описание товара или услуги" prop="Description">
               <el-input
-                v-model="model.name"
+                v-model="model.Description"
                 type="textarea"
                 :autosize="{ minRows: 4, maxRows: 6 }"
                 maxlength="320"
                 show-word-limit
                 placeholder="Введите описание..."
-              ></el-input>
+              />
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-row>
-          <el-col type="flex" :xs="24" :sm="22" :md="22">
-            <el-form-item label="Категория" prop="category">
+        <el-row :gutter="50">
+          <el-col type="flex" :xs="24" :sm="22" :md="12">
+            <el-form-item label="Категория" prop="CategoryId">
               <el-select
-                v-model="model.category"
+                v-model="model.CategoryId"
+                :loading="dictionaryLoaded"
                 placeholder="Выбрать из списка"
               >
                 <template slot="prefix">
-                  <el-icon class="el-icon-files"></el-icon>
+                  <el-icon class="el-icon-files" />
                 </template>
                 <el-option
                   v-for="item in categoryList"
@@ -51,39 +52,28 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
 
-        <el-row>
-          <el-col type="flex" :xs="24" :sm="12" :md="11">
-            <el-form-item label="Сумма" prop="amount" class="is-required">
-              <Money
-                v-model.number="model.amount"
-                :max="10000000"
-                :min="10"
-                :fixed="2"
-                clearable
-              >
-                <template slot="append"><CurrencyRuble /></template>
-              </Money>
+          <el-col type="flex" :xs="24" :sm="22" :md="12">
+            <el-form-item label="Кол-во" prop="Count">
+              <el-input-number v-model="model.Count" :min="1" :max="100000" />
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-row :gutter="50">
+        <el-row :gutter="50" class="form-add-entity__paymethods">
           <el-col :xs="24" :md="12">
             <div class="radio-paymethod-group">
               <span class="radio-paymethod-group__heading"
-                >Способы поступления денег</span
+                >Выберите платежную систему</span
               >
               <div class="radio-paymethod-group__item paymethod-radio">
                 <input
                   id="paymethod_1"
-                  v-model="paymethodType"
+                  v-model="paymethodTypeCards"
                   value="Cards"
                   class="paymethod-radio__input"
                   name="paymethodType"
-                  type="radio"
-                  checked
+                  type="checkbox"
                 />
                 <label class="paymethod-radio__name" for="paymethod_1">
                   <span class="paymethod-radio__logo">
@@ -92,21 +82,21 @@
                     />
                   </span>
                   <span class="paymethod-radio__name-title">
-                    На банковскую карту
+                    Банковская карта
                   </span>
                   <span class="paymethod-radio__name-text">
-                    Visa, MasterCard, Maestro, Mir</span
+                    Visa, MasterCard, Maestro, Мир</span
                   >
                 </label>
               </div>
               <div class="radio-paymethod-group__item paymethod-radio">
                 <input
                   id="paymethod_2"
-                  v-model="paymethodType"
+                  v-model="paymethodTypeWmp"
                   class="paymethod-radio__input"
                   value="WebMoney"
                   name="paymethodType"
-                  type="radio"
+                  type="checkbox"
                 />
                 <label class="paymethod-radio__name" for="paymethod_2">
                   <span class="paymethod-radio__logo">
@@ -115,7 +105,7 @@
                     />
                   </span>
                   <span class="paymethod-radio__name-title"
-                    >На WebMoney кошелёк</span
+                    >WebMoney кошелёк</span
                   >
                   <span class="paymethod-radio__name-text"> P - кошелёк</span>
                 </label>
@@ -124,49 +114,119 @@
           </el-col>
 
           <el-col :xs="24" :md="12">
-            <el-form-item
-              v-if="currentPayMethods.length >= 0"
-              :label="paymentSelectLabel"
-              prop="paymethod"
-            >
-              <el-select
-                v-model="model.paymethod"
-                :no-data-text="'Нет карты/кошелька'"
-                :default-first-option="true"
-                placeholder="Выбрать из списка"
+            <div class="form-add-entity__select-card">
+              <el-form-item
+                v-if="paymethodTypeCards"
+                :label="'Банковская карта'"
+                prop="CardPurseId"
               >
-                <template slot="prefix">
-                  <el-icon class="el-icon-wallet"></el-icon>
-                </template>
-                <el-option
-                  v-for="item in currentPayMethods"
-                  :key="item.Id"
-                  :label="item.Purse"
-                  :value="item.Id"
+                <el-select
+                  v-model="model.CardPurseId"
+                  :no-data-text="'Нет карты'"
+                  placeholder="Выбрать из списка"
                 >
-                  <select-option :paymethod="item" />
-                </el-option>
-                <el-option
-                  value="new"
-                  :label="titleOptionAddPayMethod"
-                  class="form-add-entity__new-option"
-                  @click.native="toggleDialogPaymethod(true)"
-                >
-                  <span class="form-add-entity__new-option-icon">
-                    <el-icon class="el-icon-bank-card"></el-icon>
-                  </span>
-                  <span class="form-add-entity__new-option-title">
-                    {{ titleOptionAddPayMethod }}</span
+                  <template slot="prefix">
+                    <el-icon class="el-icon-wallet"></el-icon>
+                  </template>
+                  <el-option
+                    v-for="item in paymethods"
+                    :key="item.Id"
+                    :label="item.Purse"
+                    :value="item.Guid"
                   >
-                </el-option>
-              </el-select>
-            </el-form-item>
+                    <select-option :paymethod="item" />
+                  </el-option>
 
-            <selected-paymethod
-              v-if="model.paymethod !== 'new' && model.paymethod"
-              :paymethod="currentPayMethod"
-            />
+                  <el-option
+                    value="new"
+                    label="Банковская карта"
+                    class="form-add-entity__new-option"
+                    @click.native="toggleDialogPaymethod(true)"
+                  >
+                    <span class="form-add-entity__new-option-icon">
+                      <el-icon class="el-icon-bank-card" />
+                    </span>
+                    <span class="form-add-entity__new-option-title"
+                      >Добавить новую карту</span
+                    >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+
+            <div class="form-add-entity__selected-items">
+              <div
+                v-if="model.WmpPurseId || model.CardPurseId"
+                class="form-add-entity__selected-heading"
+              >
+                Вы указали способы оплаты
+              </div>
+              <div class="form-add-entity__selected-item">
+                <payment-card
+                  v-if="
+                    (paymethodTypeCards &&
+                      model.CardPurseId !== 'new' &&
+                      model.CardPurseId) ||
+                      getLastAddedPaymethod
+                  "
+                  :paymethod="currentPayMethod || getLastAddedPaymethod"
+                  :type-form="true"
+                />
+              </div>
+
+              <div class="form-add-entity__selected-item">
+                <payment-wmp
+                  v-if="paymethodTypeWmp && wmpPurse"
+                  :wmp="wmpPurse"
+                  :type-form="true"
+                />
+              </div>
+            </div>
           </el-col>
+        </el-row>
+
+        <el-row :gutter="50">
+          <el-col type="flex" :xs="24" :sm="12" :md="12">
+            <el-form-item label="Стоимость" prop="Amount" class="is-required">
+              <el-input
+                v-model="model.Amount"
+                v-currency="options"
+                @input="onInputAmount"
+              >
+                <template slot="append"
+                  ><el-icon class="el-icon-money"
+                /></template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col type="flex" :xs="24" :sm="12" :md="12">
+            <el-form-item label="Предложение действует до" prop="Duration">
+              <el-date-picker
+                v-model="model.Duration"
+                type="date"
+                format="yyyy/MM/dd"
+                placeholder="Выберите дату"
+                :picker-options="pickerOptions"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+
+          <div class="commission">
+            <el-icon class="el-icon-info commission__icon-info" />
+            <span class="commission__title">Коммиссия:</span>
+            <span class="commission__item"
+              >Банковская карта:
+              <span class="commission__value">{{ CardCommission }}</span>
+              ₽</span
+            >
+            <span class="commission__item">
+              WebMoney:
+              <span class="commission__value">{{ WmpCommission }}</span>
+              ₽</span
+            >
+          </div>
         </el-row>
 
         <div class="form-add-entity__footer">
@@ -195,10 +255,10 @@
               <el-button
                 icon="el-icon-refresh-left"
                 @click="resetForm('model')"
-              ></el-button>
+              />
             </el-tooltip>
 
-            <el-button type="primary" @click="submitForm('model')"
+            <el-button type="primary" @click="onSubmit('model')"
               >Создать предложение</el-button
             >
           </div>
@@ -208,67 +268,103 @@
       <SuccessCreated v-if="createDone" />
     </el-card>
 
-    <AddNewPaymethod
-      :active-tab="paymethodType"
-      @close:dialog="closeDialogAddNewPayMethod"
-    />
+    <AddNewPaymethod @close:dialog="closeDialogAddNewPayMethod" />
   </div>
 </template>
 
 <script>
 import AddNewPaymethod from '@/components/AddNewPaymethod';
-import Money from '@/components/InputMoney';
+import { CurrencyDirective, parseCurrency } from 'vue-currency-input';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CreditCardBlackLogo from '../../../../public/creditCardBlack.svg';
-import {
-  CurrencyRuble,
-  SelectOption,
-  SelectedPaymethod,
-  SuccessCreated,
-} from './components';
+import { SelectOption, SuccessCreated } from './components';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import PaymentWmp from '@/components/PaymentWmp';
+import PaymentCard from '@/components/PaymentCard';
+import { getCommission } from '@/api/deals';
+import _debounce from 'lodash.debounce';
+import { getLastAddedPaymethod } from '@/utils/profile';
 
 export default {
+  directives: {
+    currency: CurrencyDirective,
+  },
   components: {
-    Money,
+    PaymentCard,
+    PaymentWmp,
     SuccessCreated,
     AddNewPaymethod,
     CreditCardBlackLogo,
     WebmoneyLogo,
-    CurrencyRuble,
-    SelectedPaymethod,
     SelectOption,
   },
   data() {
     const validateAmount = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('Вам нужно указать сумму'));
+        return callback(new Error('Вам нужно указать стоимость'));
+      }
+      if (value < this.MinAmount) {
+        callback(new Error(`Минимальная сумма ${this.MinAmount} руб`));
       } else {
-        if (value < 10) {
-          callback(new Error('Минимальная сумма 10 руб'));
-        }
         callback();
       }
     };
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          let oneYearFromNow = new Date();
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+          return time.getTime() > oneYearFromNow;
+        },
+        shortcuts: [
+          {
+            text: 'До завтра',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24);
+              picker.$emit('pick', date);
+            },
+          },
+          {
+            text: 'Одну неделю',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            },
+          },
+        ],
+      },
+      lastAddedPaymethod: null,
+      maxAmount: 10000000,
+      submitting: false,
       createDone: false,
       termsActive: false,
-      creditCard: null,
-      paymethodType: 'WebMoney',
-      paymentSelectLabel: 'Кошелёк',
-      categoryList: [
-        { Id: 343, Name: 'Первая' },
-        { Id: 344, Name: 'Вторая' },
-      ],
+      paymethodTypeCards: true,
+      paymethodTypeWmp: false,
+      WmpCommission: 0,
+      CardCommission: 0,
+      MinAmount: 0,
       model: {
-        name: '',
-        category: null,
-        amount: 0,
-        paymethod: null,
+        Duration: '',
+        Count: 1,
+        Description: '',
+        CategoryId: 2,
+        Amount: 0,
+        CardPurseId: JSON.parse(getLastAddedPaymethod()).Guid || '',
+        WmpPurseId: '',
       },
 
       rules: {
-        name: [
+        Duration: [
+          {
+            required: true,
+            message: 'Вам нужно выбрать дату',
+            trigger: 'blur',
+          },
+        ],
+        Description: [
           {
             required: true,
             message: 'Вам нужно заполнить это поле',
@@ -281,20 +377,20 @@ export default {
             trigger: 'blur',
           },
         ],
-        amount: [
+        Amount: [
           {
             validator: validateAmount,
             trigger: 'blur',
           },
         ],
-        paymethod: [
+        CardPurseId: [
           {
             required: true,
             message: 'Вам нужно выбрать',
             trigger: 'change',
           },
         ],
-        category: [
+        CategoryId: [
           {
             required: true,
             message: 'Вам нужно выбрать',
@@ -309,50 +405,100 @@ export default {
     ...mapState({
       device: state => state.app.device,
       dialogAddPaymethod: state => state.profile.dialogAddPaymethod,
+      categoryList: state => state.dictionary.categories,
+      dictionaryLoaded: state => state.dictionary.dictionaryLoaded,
     }),
     ...mapGetters({
-      payMethods: 'profile/getPayMethodsOfType',
+      paymethods: 'profile/getPaymethods',
+      wmpPurse: 'profile/getWmpPurse',
     }),
 
-    currentPayMethods() {
-      return this.payMethods(this.paymethodType);
-    },
-
     currentPayMethod() {
-      return this.currentPayMethods.find(x => x.Id === +this.model.paymethod);
+      return this.paymethods.find(x => x.Guid === this.model.CardPurseId);
     },
 
-    titleOptionAddPayMethod() {
-      return this.paymethodType === 'Cards' ? 'Новая карта' : 'Новый кошелёк';
+    getLastAddedPaymethod() {
+      return this.lastAddedPaymethod;
+    },
+
+    getDateISO() {
+      return this.model.Duration && this.model.Duration.toISOString();
+    },
+
+    options() {
+      return {
+        currency: 'RUB',
+        locale: 'ru',
+        valueRange: {
+          min: this.MinAmount ? this.MinAmount : 0,
+          max: this.maxAmount,
+        },
+        allowNegative: false,
+        distractionFree: false,
+      };
+    },
+
+    numberValue() {
+      return (
+        this.model.Amount && parseCurrency(this.model.Amount, this.options)
+      );
     },
   },
 
   watch: {
-    paymethodType(newVal) {
-      if (newVal === 'Cards') {
-        this.paymentSelectLabel = 'Банковская карта';
+    paymethodTypeCards(newVal) {
+      if (!newVal) {
+        this.$set(this.model, 'CardPurseId', '');
       }
-
-      if (newVal === 'WebMoney') {
-        this.paymentSelectLabel = 'Кошелёк';
-      }
-
-      this.$set(this.model, 'paymethod', null);
     },
+
+    paymethodTypeWmp(newVal) {
+      if (!newVal) {
+        this.$set(this.model, 'WmpPurseId', '');
+      } else {
+        if (this.wmpPurse) {
+          this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
+        } else {
+          console.log('Нет wmp');
+        }
+      }
+    },
+  },
+
+  created() {
+    this.debounseGetCommission = _debounce(this.getCurrentCommission, 150);
+  },
+
+  mounted() {
+    if (this.wmpPurse) {
+      this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
+      this.paymethodTypeWmp = true;
+    }
+
+    // if (this.paymethods.length > 0) {
+    //   this.paymethodTypeCards = true;
+    // }
   },
 
   methods: {
     ...mapActions('profile', ['toggleDialogPaymethod']),
+    ...mapActions('deals', ['createDeal']),
 
-    submitForm(formName) {
-      this.createDone = true;
+    onSubmit(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid) {
-          alert('submit!');
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
+        if (!valid) return;
+        this.submitting = true;
+        const model = {
+          ...this.model,
+          Duration: this.getDateISO,
+          Amount: this.numberValue,
+        };
+        console.log('model', model);
+        this.createDeal(model)
+          .then(() => {
+            this.resetForm(formName);
+          })
+          .finally(() => (this.submitting = false));
       });
     },
 
@@ -361,7 +507,32 @@ export default {
     },
 
     closeDialogAddNewPayMethod() {
-      this.$set(this.model, 'paymethod', null);
+      this.$set(this.model, 'CardPurseId', '');
+      this.getLastPaymethod();
+    },
+
+    getCurrentCommission(val) {
+      getCommission(val).then(commissions => {
+        const { CardCommission, WmpCommission, MinAmount } = commissions;
+
+        this.CardCommission = CardCommission;
+        this.WmpCommission = WmpCommission;
+        this.MinAmount = MinAmount;
+      });
+    },
+
+    onInputAmount() {
+      if (this.numberValue > this.maxAmount) return;
+
+      this.debounseGetCommission(this.numberValue);
+    },
+
+    getLastPaymethod() {
+      let data = getLastAddedPaymethod();
+      if (!data) return;
+
+      this.lastAddedPaymethod = JSON.parse(data);
+      this.$set(this.model, 'CardPurseId', JSON.parse(data).Guid);
     },
   },
 };
@@ -390,6 +561,55 @@ export default {
     border: 1px solid #ebf5ff;
     background-color: #ebf5ff;
     border-radius: 50%;
+  }
+}
+
+.commission {
+  //background-color: #eaf0f7;
+  background-color: #ebf5ff;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    left: 58px;
+    top: -7px;
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 363px;
+    height: 287px;
+    opacity: 0.3;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  &__item {
+    color: #0f213c;
+    font-size: 12px;
+    margin-right: 15px;
+  }
+
+  &__icon-info {
+    font-size: 20px;
+    color: #78a9d9;
+    margin-right: 6px;
+  }
+
+  &__title {
+    font-size: 14px;
+    margin-right: 15px;
+  }
+
+  &__value {
+    font-weight: 600;
   }
 }
 
@@ -434,6 +654,29 @@ export default {
     margin-bottom: 20px;
   }
 
+  &__paymethods {
+    margin-bottom: 24px;
+    min-height: 222px;
+  }
+
+  &__select-card {
+    .el-form-item {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__selected-heading {
+    font-size: 14px;
+    color: #606266;
+    padding: 0 0 10px;
+  }
+
+  &__selected-item {
+    &:not(:last-child) {
+      margin-bottom: 6px;
+    }
+  }
+
   @media (max-width: $mq-mobile) {
     .el-select {
       width: 100%;
@@ -470,7 +713,9 @@ export default {
 
 .paymethod-radio {
   width: 100%;
+  position: relative;
   max-width: 400px;
+  user-select: none;
 
   &__input {
     opacity: 0;
@@ -479,14 +724,18 @@ export default {
     z-index: -1;
 
     &:checked ~ .paymethod-radio__name {
-      background-color: #25bf79;
-      //background-color: rgba(#409eff, 0.25);
-      //color: #000;
-      color: #fff;
+      //background-color: #25bf79;
+      background-color: rgba(#409eff, 0.1);
+      //background-color: rgba(#409eff, 0.5);
+      border-color: #25bf79;
+      color: #000;
+
+      //color: #fff;
 
       .paymethod-radio__icon {
         path {
-          fill: #fff;
+          //fill: #fff;
+          fill: #036cb5;
         }
       }
     }
@@ -499,7 +748,6 @@ export default {
     height: 80px;
     padding: 0 20px 0 35px;
     border-radius: 40px;
-    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -507,7 +755,7 @@ export default {
     color: #999;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
-    border: 1px solid #dcdfe6;
+    border: 2px solid #dcdfe6;
 
     &:hover {
       background-color: rgba(#409eff, 0.1);
@@ -565,6 +813,17 @@ export default {
         fill: #999;
       }
     }
+  }
+
+  &__check {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: green;
+    border-radius: 50%;
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 15px;
   }
 }
 

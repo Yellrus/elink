@@ -1,0 +1,127 @@
+.payment-card {
+  position: relative;
+  width: 210px;
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  background-color: #409eff;
+  overflow: hidden;
+  box-shadow: 0px 20px 14px -16px #ebebeb;
+  will-change: transform;
+  transition: transform 0.2s ease-in-out;
+
+  &::before {
+    content: '';
+    left: 58px;
+    top: -7px;
+    display: block;
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 363px;
+    height: 287px;
+    opacity: 0.3;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &__icon {
+    position: relative;
+    z-index: 2;
+
+    &--creditCard {
+      width: 50px;
+    }
+    &--webmoney {
+      width: 45px;
+      margin-bottom: 10px;
+      margin-right: 3px;
+      path {
+        fill: #fff;
+      }
+    }
+  }
+
+  &__number {
+    display: block;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  &__body {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+
+  &__btn {
+    border: none;
+    outline: none;
+    background-color: #f5f7fa;
+    width: 95%;
+    padding: 7px 5px;
+    cursor: pointer;
+    border-radius: 0;
+    margin-bottom: 5px;
+    transition: background 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+
+  &__btn-popconfirm {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  &--wmp {
+    flex-direction: row;
+    justify-content: center;
+
+    .payment-card__number {
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+
+    .payment-card__body {
+      padding: 8px 20px 8px 8px;
+    }
+  }
+
+  &--form {
+    min-height: 50px;
+    width: 238px;
+
+    .payment-card__number {
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+
+    .payment-card__icon {
+
+      &--creditCard {
+        width: 30px;
+      }
+      &--webmoney {
+        width: 25px;
+        margin-bottom: 0;
+        margin-right: 3px;
+      }
+    }
+  }
+}

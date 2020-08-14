@@ -31,7 +31,12 @@ import {
   Loading,
   Notification,
   Message,
+  Alert,
+  Popover,
+  Popconfirm,
   Drawer,
+  DatePicker,
+  InputNumber,
   Scrollbar,
 } from 'element-ui';
 import lang from 'element-ui/lib/locale/lang/ru-RU';
@@ -65,9 +70,14 @@ Vue.use(Col);
 Vue.use(Card);
 Vue.use(Dialog);
 Vue.use(Avatar);
+Vue.use(Alert);
 Vue.use(Tabs);
 Vue.use(TabPane);
 Vue.use(Drawer);
+Vue.use(Popover);
+Vue.use(Popconfirm);
+Vue.use(DatePicker);
+Vue.use(InputNumber);
 Vue.use(Loading);
 Vue.use(Scrollbar);
 

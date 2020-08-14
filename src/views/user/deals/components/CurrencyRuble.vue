@@ -1,5 +1,5 @@
 <template>
-  <RubleCurrencyLogo class="currency currency--ruble" />
+  <RubleCurrencyLogo class="currency currency--ruble" :style="{ width: size + 'px' }" />
 </template>
 
 <script>
@@ -8,13 +8,11 @@ export default {
   components: {
     RubleCurrencyLogo,
   },
+  props: {
+    size: {
+      type: Number,
+      default: 10,
+    },
+  },
 };
 </script>
-
-<style lang="scss" scoped>
-.currency {
-  &--ruble {
-    width: 18px;
-  }
-}
-</style>

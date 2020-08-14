@@ -37,3 +37,17 @@
 .el-input--prefix .el-input__inner {
   padding-left: 35px;
 }
+
+.el-tabs__nav-next, .el-tabs__nav-prev {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 20px;
+  background-color: #F5F7FA;
+  -webkit-tap-highlight-color: rgba(#409EFF, 0.3);
+}
+
+.el-textarea textarea {
+  resize: none;
+}

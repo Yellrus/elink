@@ -23,11 +23,11 @@
       />
       <el-form-item
         label="Номер карты"
-        prop="cardNumber"
+        prop="Purse"
         class="credit-card__form-item"
       >
         <el-input
-          v-model="model.cardNumber"
+          v-model="model.Purse"
           v-mask="'#### #### #### ####'"
           masked="true"
           :autofocus="true"
@@ -74,11 +74,12 @@ export default {
       submitting: false,
       creditCard: null,
       model: {
-        cardNumber: null,
+        Purse: null,
+        Paymethod: 2,
       },
 
       rules: {
-        cardNumber: [
+        Purse: [
           {
             validator: validateCardNumber,
             trigger: 'blur',
@@ -120,12 +121,10 @@ export default {
   },
 
   methods: {
-    ...mapActions('profile', ['toggleDialogPaymethod']),
+    ...mapActions('profile', ['toggleDialogPaymethod', 'addNewPaymethod']),
     fetchDataCardInfo(query) {
       fetchCardInfo(query)
         .then(data => {
-          console.log('response.data', data);
-
           const {
             formBackgroundColor,
             formBankLogoSmallSvg,
@@ -159,18 +158,21 @@ export default {
       this.$refs[formName].validate(valid => {
         if (!valid) return;
         this.submitting = true;
+        const model = this.model;
+        this.addNewPaymethod(model)
+          .then(() => {
+            this.$notify({
+              title: 'Внимание',
+              message: 'Привязка успешно выполнена',
+              position: 'bottom-right',
+              type: 'success',
+              duration: 4000,
+            });
 
-        // place for async post request
-
-        this.$notify({
-          title: 'Внимание',
-          message: 'Привязка успешно выполнена',
-          type: 'success',
-          duration: 4000,
-        });
-        this.submitting = false;
-        this.resetForm(formName);
-        this.toggleDialogPaymethod(false);
+            this.resetForm(formName);
+            this.toggleDialogPaymethod(false);
+          })
+          .finally(() => (this.submitting = false));
       });
     },
   },

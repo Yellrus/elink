@@ -85,6 +85,7 @@ export default {
         await this.$store.dispatch('profile/getInfo');
 
         let wmid = this.$store.getters.wmid;
+
         wmid && this.$router.replace('/');
       } catch (err) {
         Message({

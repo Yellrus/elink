@@ -1,6 +1,7 @@
 <template>
   <el-dialog
-    title="Прикрепить карту / кошелёк"
+    title="Добавление банковской карты"
+    :destroy-on-close="true"
     :visible="dialogAddPaymethod"
     width="100%"
     :style="{ maxWidth: '400px' }"
@@ -9,26 +10,17 @@
     center
     @close="closeDialog"
   >
-    <el-tabs :value="activeTab" :stretch="true">
-      <el-tab-pane label="Банковская карта" name="Cards">
-        <form-add-card />
-      </el-tab-pane>
-      <el-tab-pane label="WebMoney кошелёк" name="WebMoney">
-        <form-add-webmoney />
-      </el-tab-pane>
-    </el-tabs>
+    <form-add-card />
   </el-dialog>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
 import FormAddCard from '@/components/FormAddCard';
-import FormAddWebmoney from '@/components/FormAddWebmoney';
 
 export default {
   components: {
     FormAddCard,
-    FormAddWebmoney,
   },
   props: {
     activeTab: {

@@ -1,49 +1,21 @@
-import { getInfo } from '@/api/profile';
-
-const initialState = {
-  payments: [
-    {
-      Currency: 'RUB',
-      Guid: 'AB3C22E6-493E-45C8-A20D-226B7A6CF066',
-      Id: 4125,
-      Paymethod: 'Cards',
-      Purse: '5470 70XX XXXX 8041',
-    },
-    {
-      Currency: 'RUB',
-      Guid: 'AB3C22E6-493E-45C8-A20D-226B7A6CF066',
-      Id: 4122,
-      Paymethod: 'Cards',
-      Purse: '5470 70XX XXXX 4444',
-    },
-    {
-      Currency: 'BTC',
-      Guid: '464D8660-432A-44E4-A2F7-305A7AB3324B',
-      Id: 4333,
-      Paymethod: 'WebMoney',
-      Purse: 'X684427353810',
-    },
-    {
-      Currency: 'RUB',
-      Guid: '464D8660-432A-44E4-A2F7-305A7AB3324B',
-      Id: 4337,
-      Paymethod: 'WebMoney',
-      Purse: 'R684427353814',
-    },
-  ],
-};
+import { getInfo, addNewPaymethod, removePaymethod } from '@/api/profile';
+import { Message } from 'element-ui';
+import { setLastAddedPaymethod } from '@/utils/profile';
 
 const state = {
   wmid: null,
-  profile: null,
-  payments: initialState.payments,
+  wmpPurses: [],
+  lastAddedPaymethod: {},
+  paymethods: [],
+  profile: {},
   dialogAddPaymethod: false,
   isLoaded: false,
 };
 
 const getters = {
-  getPayMethodsOfType: state => type =>
-    state.payments.filter(x => x.Paymethod === type),
+  getWmpPurse: state => state.paymethods.find(item => item.Paymethod === 'WebMoneyWMP' || item.Paymethod === 'WebMoneyWMPTest'),
+  getProfile: state => state.profile,
+  getPaymethods: state => state.paymethods.filter(item => item.Paymethod === 'Cards' || item.Paymethod === 'CardsTest')
 };
 
 const mutations = {
@@ -53,6 +25,27 @@ const mutations = {
 
   SET_PROFILE: (state, profile) => {
     state.profile = profile;
+  },
+
+  SET_NEW_PAYMETHOD: (state, lastAddedPaymethod) => {
+    state.lastAddedPaymethod = lastAddedPaymethod;
+  },
+
+  SET_PAYMETHODS: (state, payload) => {
+    state.paymethods = payload;
+  },
+
+  REMOVE_PAYMETHOD: (state, id) => {
+    let idx = state.paymethods.findIndex(item => item.Id === id);
+    state.paymethods.splice(idx, 1);
+  },
+
+  UPDATE_PAYMETHODS: (state, paymethod) => {
+    state.paymethods.push(paymethod);
+  },
+
+  SET_WMP_PURSES: (state, payload) => {
+    state.wmpPurses = payload;
   },
 
   SET_PROFILE_LOADED: (state, payload) => {
@@ -74,14 +67,60 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo()
         .then(response => {
-          const { Profile, UserLogin } = response;
+          const { Profile, UserLogin, WmpPurses } = response;
           commit('SET_PROFILE', Profile);
+          commit('SET_PAYMETHODS', Profile.PaymentAccounts);
           commit('SET_WMID', UserLogin);
+          commit('SET_WMP_PURSES', WmpPurses);
           commit('SET_PROFILE_LOADED', true);
 
           resolve(response);
         })
         .catch(error => {
+          Message({
+            message: error.Description || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  addNewPaymethod({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+      addNewPaymethod(payload)
+        .then(card => {
+          commit('UPDATE_PAYMETHODS', card);
+          commit('SET_NEW_PAYMETHOD', card);
+          setLastAddedPaymethod(card);
+          resolve(card);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  removePaymethod({ commit }, id) {
+    return new Promise((resolve, reject) => {
+      removePaymethod(id)
+        .then(card => {
+          commit('REMOVE_PAYMETHOD', id);
+
+          resolve(card);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
           reject(error);
         });
     });
