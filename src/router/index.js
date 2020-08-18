@@ -102,23 +102,27 @@ export const constantRoutes = [
   {
     path: '/passport-success',
     component: () => import('@/views/action-page/passport-success'),
+    meta: { public: true },
     hidden: true,
   },
   {
     path: '/passport-failed',
     component: () => import('@/views/action-page/passport-error'),
+    meta: { public: true },
     hidden: true,
   },
 
   {
     path: '/pay-success',
     component: () => import('@/views/action-page/pay-success'),
+    meta: { public: true },
     hidden: true,
   },
 
   {
     path: '/pay-failed',
     component: () => import('@/views/action-page/pay-failed'),
+    meta: { public: true },
     hidden: true,
   },
 
@@ -143,12 +147,14 @@ export const constantRoutes = [
   {
     path: '/500',
     hidden: true,
+    meta: { public: true },
     component: () => import('@/views/error-page/500'),
   },
 
   {
     path: '/401',
     hidden: true,
+    meta: { public: true },
     component: () => import('@/views/error-page/401'),
   },
 

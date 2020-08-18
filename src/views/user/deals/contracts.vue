@@ -25,7 +25,7 @@
 
               <div class="contract__Column">
                 <div class="contract__Name">
-                  {{ contract.Name }}
+                  {{ contract.Name | uppercaseFirst }}
                 </div>
 
                 <div class="contract__Panel">
