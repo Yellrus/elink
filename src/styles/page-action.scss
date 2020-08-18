@@ -8,12 +8,17 @@
   background-color: #f9fafc;
   height: 100vh;
   width: 100%;
+  padding: 10px;
 
   &__title {
     text-align: center;
     font-size: 1.8em;
     line-height: 1.4;
     margin-bottom: 20px;
+
+    @media(max-width: 992px) {
+      text-align: left;
+    }
   }
 
   &__box-card {

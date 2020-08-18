@@ -83,6 +83,7 @@ export default {
         let urlData = JSON.parse(param2Obj(window.location.href).authData);
         await this.$store.dispatch('user/login', urlData);
         await this.$store.dispatch('profile/getInfo');
+        await this.$store.dispatch('dictionary/getDictionary');
 
         let wmid = this.$store.getters.wmid;
 
