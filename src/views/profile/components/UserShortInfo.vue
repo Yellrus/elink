@@ -4,11 +4,9 @@
       <div v-if="device !== 'mobile'" class="user-info__header">
         <div class="user-info__avatar">
           <user-avatar :size="100" />
-          <span
-            v-if="device !== 'mobile' && isLoadedProfile"
-            class="user-info__name"
-            >{{ profile.FirstName ? profile.FirstName : wmid }}</span
-          >
+          <span v-if="device !== 'mobile'" class="user-info__name">{{
+            profile.FirstName ? profile.FirstName : wmid
+          }}</span>
         </div>
       </div>
 
@@ -44,7 +42,11 @@
           </div>
         </div>
       </div>
-
+      <div class="user-info__btn-passport">
+        <el-button :loading="loadingDataIframe" @click="handlePassportData"
+          >Посмотреть личные данные</el-button
+        >
+      </div>
       <div class="user-info__activity">
         <div class="user-info__result result">
           <div class="result__icon-wrap">
@@ -81,21 +83,21 @@
             123650
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import UserAvatar from '../../../components/UserAvatar/index';
-import { mapGetters, mapState } from 'vuex';
+import UserAvatar from '@/components/UserAvatar/index';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import openWindow from '@/utils/open-window';
 
 export default {
   name: 'UserShortInfo',
   components: { UserAvatar },
   data: () => ({
+    loadingDataIframe: false,
     shortInfo: {
       icon: 'el-icon-phone-outline',
       label: 'Телефон',
@@ -110,6 +112,16 @@ export default {
       device: state => state.app.device,
       isLoadedProfile: state => state.profile.isLoaded,
     }),
+  },
+
+  methods: {
+    ...mapActions('profile', ['getPassportDataLink']),
+    async handlePassportData() {
+      this.loadingDataIframe = true;
+      const url = await this.getPassportDataLink();
+      this.loadingDataIframe = false;
+      openWindow(url, 'Escrow Merchant личные данные');
+    },
   },
 };
 </script>
@@ -190,8 +202,15 @@ export default {
   }
 
   &__activity {
-    background-color: #F5F7FA;
+    background-color: #f5f7fa;
     padding: 24px;
+  }
+
+  &__btn-passport {
+    display: flex;
+    justify-content: center;
+    padding: 0 10px;
+    margin-bottom: 20px;
   }
 }
 

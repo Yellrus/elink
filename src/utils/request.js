@@ -3,11 +3,13 @@ import { Message } from 'element-ui';
 import store from '@/store';
 import { getToken } from '@/utils/auth';
 
+export const BASE_URL = 'http://172.16.29.168:99/';
+
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://172.16.29.168:99/', // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000, // request timeout
+  baseURL: BASE_URL, // url = base url + request url
+  //withCredentials: true, // send cookies when cross-domain requests
+  timeout: 10000, // request timeout
 });
 
 // request interceptor

@@ -1,6 +1,7 @@
 import { getInfo, addNewPaymethod, removePaymethod } from '@/api/profile';
 import { Message } from 'element-ui';
 import { setLastAddedPaymethod } from '@/utils/profile';
+import { getPassportDataLink } from '@/api/profile';
 
 const state = {
   wmid: null,
@@ -62,7 +63,6 @@ const actions = {
     commit('TOGGLE_DIALOG_ADD_PAYMETHOD', payload);
   },
 
-  // get user info
   getInfo({ commit }) {
     return new Promise((resolve, reject) => {
       getInfo()
@@ -72,6 +72,25 @@ const actions = {
           commit('SET_PAYMETHODS', Profile.PaymentAccounts);
           commit('SET_WMID', UserLogin);
           commit('SET_WMP_PURSES', WmpPurses);
+          commit('SET_PROFILE_LOADED', true);
+
+          resolve(response);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  getPassportDataLink({ commit }) {
+    return new Promise((resolve, reject) => {
+      getPassportDataLink()
+        .then(response => {
           commit('SET_PROFILE_LOADED', true);
 
           resolve(response);

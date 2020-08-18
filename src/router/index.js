@@ -39,7 +39,7 @@ export const constantRoutes = [
   {
     path: '/user',
     component: Layout,
-    redirect: '/user/deals/list',
+    redirect: '/user/deals',
     name: 'UserDeals',
     meta: {
       title: 'Сделки',
@@ -47,24 +47,40 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'deals/create',
+        path: 'create',
         component: () => import('@/views/user/deals/create'),
         name: 'UserDealsCreate',
         meta: { title: 'Создать', icon: 'edit-outline' },
       },
       {
-        path: 'deals/list',
-        component: () => import('@/views/user/deals/list'),
+        path: 'contracts',
+        component: () => import('@/views/user/deals/contracts'),
+        name: 'UserDealsContracts',
+        meta: { title: 'Предложения', icon: 'sell' },
+      },
+      {
+        path: 'contracts/:id',
+        component: () => import('@/views/user/deals/contractDetail'),
+        name: 'UserDealsContractsDetail',
+        meta: { title: 'Контракт', icon: 'edit-outline' },
+        hidden: true,
+      },
+      {
+        path: 'deals',
+        component: () => import('@/views/user/deals/deals'),
         name: 'UserDealsList',
         meta: { title: 'Мои сделки', icon: 's-unfold' },
       },
-      {
-        path: 'deals/history',
-        component: () => import('@/views/user/deals/history'),
-        name: 'UserDealsHistory',
-        meta: { title: 'История', icon: 'time' },
-      },
     ],
+  },
+
+
+  {
+    path: '/contract/:id',
+    component: () => import('@/views/pay-confirm/index'),
+    name: 'Pay Confirm',
+    meta: { public: true },
+    hidden: true,
   },
 
   {
@@ -80,6 +96,29 @@ export const constantRoutes = [
       },
     ],
 
+    hidden: true,
+  },
+
+  {
+    path: '/passport-success',
+    component: () => import('@/views/action-page/passport-success'),
+    hidden: true,
+  },
+  {
+    path: '/passport-failed',
+    component: () => import('@/views/action-page/passport-error'),
+    hidden: true,
+  },
+
+  {
+    path: '/pay-success',
+    component: () => import('@/views/action-page/pay-success'),
+    hidden: true,
+  },
+
+  {
+    path: '/pay-failed',
+    component: () => import('@/views/action-page/pay-failed'),
     hidden: true,
   },
 

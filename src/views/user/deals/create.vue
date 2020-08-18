@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <el-card class="box-card">
+    <el-card v-if="!createDone" class="box-card">
       <div slot="header" class="box-card__header">
         <div class="box-card__header-icon">
           <el-icon class="el-icon-sell"></el-icon>
@@ -8,21 +8,34 @@
         <h2>Создание предложения</h2>
       </div>
       <el-form
-        v-if="!createDone"
         ref="model"
         :model="model"
         :rules="rules"
+        :disabled="submitting"
         label-position="top"
         class="form-add-entity"
         label-width="120px"
       >
         <el-row>
           <el-col type="flex" :xs="24" :sm="22" :md="22">
+            <el-form-item label="Название" prop="Name">
+              <el-input
+                v-model="model.Name"
+                maxlength="80"
+                show-word-limit
+                placeholder="Введите название"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col type="flex" :xs="24" :sm="22" :md="22">
             <el-form-item label="Описание товара или услуги" prop="Description">
               <el-input
                 v-model="model.Description"
                 type="textarea"
-                :autosize="{ minRows: 4, maxRows: 6 }"
+                :autosize="{ minRows: 3, maxRows: 6 }"
                 maxlength="320"
                 show-word-limit
                 placeholder="Введите описание..."
@@ -36,7 +49,7 @@
             <el-form-item label="Категория" prop="CategoryId">
               <el-select
                 v-model="model.CategoryId"
-                :loading="dictionaryLoaded"
+                :loading="!dictionaryLoaded"
                 placeholder="Выбрать из списка"
               >
                 <template slot="prefix">
@@ -116,7 +129,7 @@
           <el-col :xs="24" :md="12">
             <div class="form-add-entity__select-card">
               <el-form-item
-                v-if="paymethodTypeCards"
+                v-if="paymethodTypeCards && paymethods.length > 0"
                 :label="'Банковская карта'"
                 prop="CardPurseId"
               >
@@ -161,7 +174,10 @@
               >
                 Вы указали способы оплаты
               </div>
-              <div class="form-add-entity__selected-item">
+              <div
+                v-if="paymethods.length > 0"
+                class="form-add-entity__selected-item"
+              >
                 <payment-card
                   v-if="
                     (paymethodTypeCards &&
@@ -258,14 +274,19 @@
               />
             </el-tooltip>
 
-            <el-button type="primary" @click="onSubmit('model')"
+            <el-button
+              type="primary"
+              :loading="submitting"
+              @click="onSubmit('model')"
               >Создать предложение</el-button
             >
           </div>
         </div>
       </el-form>
+    </el-card>
 
-      <SuccessCreated v-if="createDone" />
+    <el-card v-if="createDone" class="box-card box-card--success">
+      <SuccessCreated :deal="deal" />
     </el-card>
 
     <AddNewPaymethod @close:dialog="closeDialogAddNewPayMethod" />
@@ -347,6 +368,7 @@ export default {
       CardCommission: 0,
       MinAmount: 0,
       model: {
+        Name: '',
         Duration: '',
         Count: 1,
         Description: '',
@@ -355,8 +377,21 @@ export default {
         CardPurseId: JSON.parse(getLastAddedPaymethod()).Guid || '',
         WmpPurseId: '',
       },
-
+      deal: null,
       rules: {
+        Name: [
+          {
+            required: true,
+            message: 'Вам нужно указать название',
+            trigger: 'blur',
+          },
+          {
+            min: 3,
+            max: 80,
+            message: 'Кол-во символов от 3 до 80',
+            trigger: 'blur',
+          },
+        ],
         Duration: [
           {
             required: true,
@@ -367,13 +402,13 @@ export default {
         Description: [
           {
             required: true,
-            message: 'Вам нужно заполнить это поле',
+            message: 'Вам нужно заполнить описание',
             trigger: 'blur',
           },
           {
             min: 3,
-            max: 100,
-            message: 'Кол-во символов от 3 до 100',
+            max: 320,
+            message: 'Кол-во символов от 3 до 320',
             trigger: 'blur',
           },
         ],
@@ -443,6 +478,20 @@ export default {
         this.model.Amount && parseCurrency(this.model.Amount, this.options)
       );
     },
+
+    getPayMethods() {
+      if (this.model.WmpPurseId && this.model.CardPurseId) {
+        return 3;
+      }
+
+      if (this.model.CardPurseId) {
+        return 2;
+      } else if (this.model.WmpPurseId) {
+        return 1;
+      }
+
+      return null;
+    },
   },
 
   watch: {
@@ -474,7 +523,6 @@ export default {
       this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
       this.paymethodTypeWmp = true;
     }
-
     // if (this.paymethods.length > 0) {
     //   this.paymethodTypeCards = true;
     // }
@@ -487,16 +535,27 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (!valid) return;
+        if (!this.getPayMethods) {
+          this.$message({
+            message: 'Не указан способ оплаты!',
+            type: 'error',
+            duration: 2000,
+          });
+          return;
+        }
         this.submitting = true;
         const model = {
           ...this.model,
           Duration: this.getDateISO,
           Amount: this.numberValue,
+          PayMethods: this.getPayMethods,
         };
         console.log('model', model);
         this.createDeal(model)
-          .then(() => {
+          .then(deal => {
             this.resetForm(formName);
+            this.createDone = true;
+            this.deal = deal;
           })
           .finally(() => (this.submitting = false));
       });
@@ -540,29 +599,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.box-card {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    h2 {
-      font-size: 1.3em;
-    }
-  }
-
-  &__header-icon {
-    font-size: 20px;
-    margin-right: 10px;
-    padding: 2px 8px;
-    border: 1px solid #ebf5ff;
-    background-color: #ebf5ff;
-    border-radius: 50%;
-  }
-}
 
 .commission {
   //background-color: #eaf0f7;

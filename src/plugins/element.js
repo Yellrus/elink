@@ -37,6 +37,7 @@ import {
   Drawer,
   DatePicker,
   InputNumber,
+  Tag,
   Scrollbar,
 } from 'element-ui';
 import lang from 'element-ui/lib/locale/lang/ru-RU';
@@ -78,6 +79,7 @@ Vue.use(Popover);
 Vue.use(Popconfirm);
 Vue.use(DatePicker);
 Vue.use(InputNumber);
+Vue.use(Tag);
 Vue.use(Loading);
 Vue.use(Scrollbar);
 

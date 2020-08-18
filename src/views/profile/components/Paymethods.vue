@@ -48,17 +48,6 @@ export default {
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
-.list-item {
-  display: block;
-}
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  transform: translateY(30px);
-}
 .user-paymethod {
   display: flex;
   flex-wrap: wrap;

@@ -1,4 +1,6 @@
 import Cookies from 'js-cookie';
+import store from '../store';
+
 const PaymethodKey = 'Added-Paymethod';
 
 export const getUserWMAvatar = wmid => {
@@ -18,4 +20,8 @@ export function getLastAddedPaymethod() {
 
 export function removeLastAddedPaymethod() {
   return Cookies.remove(PaymethodKey);
+}
+
+export function getCategories(id) {
+  return store.state.dictionary.categories.find(x => x.Id === id);
 }

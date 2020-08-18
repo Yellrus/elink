@@ -8,6 +8,13 @@ export function getInfo() {
   }).then(handleDataReceived);
 }
 
+export function getPassportDataLink() {
+  return request({
+    url: 'api/profile/GetAddPassportDataLink',
+    method: 'get',
+  }).then(handleDataReceived);
+}
+
 export function addNewPaymethod(data) {
   return request({
     url: 'api/profile/AddPurse',

@@ -1,74 +1,12 @@
 <template>
   <div class="page-container">
-<!--    {{ paymethods }}-->
     <div class="page-user-info">
       <div class="page-user-info__user">
-        <user-short-info />
+        <user-short-info v-if="isLoadedProfile"/>
       </div>
 
       <div class="page-user-info__content">
-        <!--        <el-tabs :stretch="true">-->
-        <!--          <el-tab-pane class="tab-pane">-->
-        <!--            <span slot="label"-->
-        <!--              ><el-icon class="el-icon-user tab-icon"></el-icon>-->
-        <!--              <span class="tab-label">Данные</span></span-->
-        <!--            >-->
-
-        <!--            <div class="page-user-info__tab-content">-->
-        <!--              Место для личных данных-->
-        <!--              <router-view></router-view>-->
-        <!--            </div>-->
-        <!--          </el-tab-pane>-->
-        <!--          <el-tab-pane label="Платежная информация">-->
-        <!--            <span slot="label"-->
-        <!--              ><el-icon class="el-icon-wallet tab-icon"></el-icon-->
-        <!--              ><span class="tab-label">Платежные реквизиты</span></span-->
-        <!--            >-->
-        <!--            <div class="page-user-info__tab-content">-->
-        <!--              <div class="page-user-info__paymethods">-->
-        <!--                  <div class="page-user-info__paymethod">-->
-        <!--                    <payment-card-->
-        <!--                      :payment="{-->
-        <!--                      Paymethod: 'Cards',-->
-        <!--                      Purse: '5470 70XX XXXX 8041',-->
-        <!--                    }"-->
-        <!--                    />-->
-        <!--                  </div>-->
-        <!--                <div class="page-user-info__paymethod">-->
-        <!--                  <payment-card-->
-        <!--                    :payment="{-->
-        <!--                      Paymethod: 'Cards',-->
-        <!--                      Purse: '5470 70XX XXXX 8041',-->
-        <!--                    }"-->
-        <!--                  />-->
-        <!--                </div>-->
-        <!--                <div class="page-user-info__paymethod">-->
-        <!--                  <payment-card-->
-        <!--                    :payment="{-->
-        <!--                      Paymethod: 'WebMoney',-->
-        <!--                      Purse: 'P157724100280',-->
-        <!--                    }"-->
-        <!--                  />-->
-        <!--                </div>-->
-
-        <!--              </div>-->
-        <!--            </div>-->
-        <!--          </el-tab-pane>-->
-        <!--          <el-tab-pane label="История транзакций">-->
-        <!--            <span slot="label"-->
-        <!--              ><el-icon class="el-icon-time tab-icon"></el-icon-->
-        <!--              ><span class="tab-label">История транзакций</span></span-->
-        <!--            >-->
-        <!--            <div class="page-user-info__tab-content">-->
-        <!--              Место для транзакций-->
-        <!--            </div>-->
-        <!--          </el-tab-pane>-->
-        <!--        </el-tabs>-->
-
-        <el-tabs
-          v-model="activeName"
-          :stretch="true"
-        >
+        <el-tabs v-model="activeName" :stretch="true">
           <el-tab-pane
             v-for="item in tabMapOptions"
             :key="item.key"
@@ -76,15 +14,15 @@
             :name="item.key"
           >
             <keep-alive>
-              <div v-if="activeName === item.key" class="page-user-info__tab-content">
+              <div
+                v-if="activeName === item.key"
+                class="page-user-info__tab-content"
+              >
                 <component :is="activeComponent" />
-<!--                <paymethod-view-tab v-if="activeName === 'paymethod'"/>-->
               </div>
             </keep-alive>
           </el-tab-pane>
         </el-tabs>
-
-
       </div>
     </div>
   </div>
@@ -102,9 +40,9 @@ export default {
     return {
       componentKey: 0,
       tabMapOptions: [
-        { label: 'Личные данные', key: 'passport' },
+        // { label: 'Личные данные', key: 'passport' },
         { label: 'Платежные реквизиты', key: 'paymethod' },
-        { label: 'История транзакций', key: 'transaction' },
+        // { label: 'История транзакций', key: 'transaction' },
       ],
       activeName: 'paymethod',
       activeComponent: 'PaymethodViewTab',
@@ -128,15 +66,15 @@ export default {
       this.$router.push(`${this.$route.path}?tab=${activeTabMenu}`);
 
       switch (activeTabMenu) {
-        case 'passport':
-          this.activeComponent = PaymethodViewTab;
-          break;
         case 'paymethod':
           this.activeComponent = PaymethodViewTab;
           break;
-        case 'transaction':
-          this.activeComponent = PaymethodViewTab;
-          break;
+        // case 'passport':
+        //   this.activeComponent = PaymethodViewTab;
+        //   break;
+        // case 'transaction':
+        //   this.activeComponent = PaymethodViewTab;
+        //   break;
       }
     },
   },
