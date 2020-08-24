@@ -75,7 +75,7 @@
     z-index: 0;
     color: #999;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.02, 0.01, 0.47, 1);
+    transition: all 0.3s cubic-bezier(0.02, 0.01, 0.47, 1);
     border: 2px solid #dcdfe6;
     transform: translate3d(0, 0, 0);
 
@@ -90,8 +90,8 @@
       background: #409eff;
       content: '';
       opacity: 1;
-      transition: transform 0.15s cubic-bezier(0.02, 0.01, 0.47, 1),
-      opacity 0.15s cubic-bezier(0.02, 0.01, 0.47, 1);
+      transition: transform 0.6s cubic-bezier(0.02, 0.01, 0.47, 1),
+      opacity 0.6s cubic-bezier(0.02, 0.01, 0.47, 1);
       z-index: -1;
       transform: translate(100%, -25%) translate3d(0, 0, 0);
       pointer-events: none;
@@ -100,7 +100,7 @@
 
     &:hover {
       color: #000;
-      transition: all 0.2s cubic-bezier(0.02, 0.01, 0.47, 1);
+      transition: all 0.5s cubic-bezier(0.02, 0.01, 0.47, 1);
       //transform: scale(1) translate3d(0, 0, 0);
 
       .paymethod-radio__icon {
