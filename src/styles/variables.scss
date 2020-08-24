@@ -1,5 +1,5 @@
-$font: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei,
-  Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,300&display=swap');
+$font: 'Roboto', Helvetica Neue, Helvetica, sans-serif;
 // base color
 $blue: #324157;
 $light-blue: #3a71a8;
@@ -13,7 +13,7 @@ $panGreen: #30b08f;
 // sidebar
 $menuText: #bfcbd9;
 $menuActiveText: #409eff;
-$subMenuActiveText: #f4f4f5; // https://github.com/ElemeFE/element/issues/12951
+$subMenuActiveText: #f4f4f5;
 
 $menuBg: #304156;
 $menuHover: #263445;

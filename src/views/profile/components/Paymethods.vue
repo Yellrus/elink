@@ -4,7 +4,7 @@
       <div :key="'addBtnDefault'" class="user-paymethod__item">
         <payment-add-btn :is-active="true" />
       </div>
-      <div :key="'wmpDefault'" class="user-paymethod__item">
+      <div v-if="wmpPurse" :key="'wmpDefault'" class="user-paymethod__item">
         <payment-wmp :wmp="wmpPurse" />
       </div>
       <div

@@ -5,6 +5,7 @@
       icon="el-icon-share"
       circle
       plain
+      size="small"
       type="primary"
     />
     <el-dropdown-menu slot="dropdown">

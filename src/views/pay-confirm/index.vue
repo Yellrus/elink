@@ -1,22 +1,23 @@
 <template>
   <div class="page-action">
-    <div class="pay page-action__box-card">
+    <loading-data v-if="loading" />
+    <div v-if="!loading" class="pay page-action__box-card">
       <h1 class="page-action__title">Подтверждение оплаты</h1>
 
       <!--  Pay Info -->
-      <div class="pay__items">
+      <div class="pay__info">
 <!--        <div class="pay__category">-->
 <!--          {{ contract.CategoryId | getCategoryName }}-->
 <!--        </div>-->
         <div class="pay__name">
-          {{ contract.Name }}
+          {{ contract.Name | uppercaseFirst }}
         </div>
 
         <div class="pay__desc">
           {{ contract.Description }}
         </div>
         <div class="pay__amount">
-          {{ contract.Amount | toThousandFilter }} ₽
+          {{ contract.Amount | toThousandFilter }} <span class="pay__currency">₽</span>
         </div>
       </div>
 
@@ -116,8 +117,6 @@
 
       <el-button type="primary" @click="onSubmit">Оплатить</el-button>
     </div>
-
-    <loading-data :is-loading="loading" />
   </div>
 </template>
 
@@ -152,7 +151,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('deals', ['getContract']),
+    ...mapActions('contract', ['getContract']),
 
     fetchContract() {
       this.loading = true;
@@ -166,7 +165,7 @@ export default {
             this.paymethod = 1;
           }
 
-          this.loading = false
+          this.loading = false;
         })
         .finally(() => (this.loading = false));
     },
@@ -181,11 +180,19 @@ export default {
 <style lang="scss" scoped>
 @import '~@/styles/page-action.scss';
 .pay {
-  &__items {
+  &__info {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    background-color: #eef4ff;
+    margin: 0 -25px 15px;
+    padding: 23px 25px 6px;
+
+    @media(max-width: $mq-mobile) {
+      margin: 0 -15px 25px;
+      padding: 23px 15px 10px;
+    }
   }
 
   &__amount {
@@ -215,6 +222,15 @@ export default {
 
   &__paymethods {
     margin-bottom: 28px;
+    padding: 0 20px;
+
+    @media(max-width: $mq-tablet-vertical) {
+      padding: 0;
+    }
+  }
+
+  &__currency {
+    font-weight: 400;
   }
 }
 </style>

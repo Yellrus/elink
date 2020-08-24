@@ -23,6 +23,7 @@ export function humansDateFormat(date) {
   return dayjs(date).format('D MMMM YYYY');
 }
 
+
 /**
  * @param {String} date
  */
@@ -69,11 +70,11 @@ export function getCategoryName(id) {
 }
 
 /**
- * 10000 => "10,000"
- * @param {number} num
+ * 10000 => "10.000,00"
+ * @param {number} value
  */
-export function toThousandFilter(num) {
-  return (+num || 0)
-    .toString()
-    .replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ','));
-}
+
+export const toThousandFilter = (value) => {
+  let val = (value).toFixed(2).replace('.', ',');
+  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};

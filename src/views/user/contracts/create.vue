@@ -3,10 +3,11 @@
     <el-card v-if="!createDone" class="box-card">
       <div slot="header" class="box-card__header">
         <div class="box-card__header-icon">
-          <el-icon class="el-icon-sell"></el-icon>
+          <el-icon class="el-icon-sell" />
         </div>
         <h2>Создание предложения</h2>
       </div>
+      <loading-data v-if="submitting" />
       <el-form
         ref="model"
         :model="model"
@@ -36,7 +37,7 @@
                 v-model="model.Description"
                 type="textarea"
                 :autosize="{ minRows: 3, maxRows: 6 }"
-                maxlength="320"
+                maxlength="140"
                 show-word-limit
                 placeholder="Введите описание..."
               />
@@ -129,7 +130,7 @@
           <el-col :xs="24" :md="12">
             <div class="form-add-entity__select-card">
               <el-form-item
-                v-if="paymethodTypeCards && paymethods.length > 0"
+                v-if="paymethodTypeCards"
                 :label="'Банковская карта'"
                 prop="CardPurseId"
               >
@@ -221,7 +222,7 @@
               <el-date-picker
                 v-model="model.Duration"
                 type="date"
-                format="yyyy/MM/dd"
+                format="dd.MM.yyyy"
                 placeholder="Выберите дату"
                 :picker-options="pickerOptions"
               >
@@ -231,17 +232,41 @@
 
           <div class="commission">
             <el-icon class="el-icon-info commission__icon-info" />
-            <span class="commission__title">Коммиссия:</span>
-            <span class="commission__item"
-              >Банковская карта:
-              <span class="commission__value">{{ CardCommission }}</span>
-              ₽</span
-            >
-            <span class="commission__item">
-              WebMoney:
-              <span class="commission__value">{{ WmpCommission }}</span>
-              ₽</span
-            >
+            <div class="commission__items">
+              <div class="commission__row">
+                <span class="commission__title">Коммиссия:</span>
+                <span class="commission__item"
+                  ><el-icon
+                    class="commission__icon commission__icon--card el-icon-bank-card"
+                  />
+                  <span class="commission__value">{{ CardCommission }}</span
+                  >&nbsp; ₽</span
+                >
+                <span class="commission__item">
+                  <WebmoneyLogo
+                    class="commission__icon commission__icon--webmoney"
+                  />
+                  <span class="commission__value">{{ WmpCommission }}</span
+                  >&nbsp; ₽</span
+                >
+              </div>
+              <div class="commission__row">
+                <span class="commission__title">Максимальная сумма:</span>
+                <span class="commission__item"
+                  ><el-icon
+                    class="commission__icon commission__icon--card el-icon-bank-card"
+                  />
+                  <span class="commission__value">150 000</span>&nbsp; ₽</span
+                >
+                <span class="commission__item">
+                  <WebmoneyLogo
+                    class="commission__icon commission__icon--webmoney"
+                  />
+                  <span class="commission__value">150 000 000</span>&nbsp;
+                  ₽</span
+                >
+              </div>
+            </div>
           </div>
         </el-row>
 
@@ -302,15 +327,17 @@ import { SelectOption, SuccessCreated } from './components';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import PaymentWmp from '@/components/PaymentWmp';
 import PaymentCard from '@/components/PaymentCard';
-import { getCommission } from '@/api/deals';
+import { getCommission } from '@/api/contract';
 import _debounce from 'lodash.debounce';
 import { getLastAddedPaymethod } from '@/utils/profile';
+import LoadingData from '@/components/LoadingData';
 
 export default {
   directives: {
     currency: CurrencyDirective,
   },
   components: {
+    LoadingData,
     PaymentCard,
     PaymentWmp,
     SuccessCreated,
@@ -320,15 +347,33 @@ export default {
     SelectOption,
   },
   data() {
+    const that = this;
     const validateAmount = (rule, value, callback) => {
-      if (!value) {
+      if (!parseCurrency(value, that.options)) {
         return callback(new Error('Вам нужно указать стоимость'));
       }
-      if (value < this.MinAmount) {
-        callback(new Error(`Минимальная сумма ${this.MinAmount} руб`));
+
+      if (parseCurrency(value, that.options) < that.MinAmount) {
+        callback(new Error(`Минимальная сумма ${that.MinAmount} ₽`));
       } else {
         callback();
       }
+      // } else if (
+      //   that.model.WmpPurseId &&
+      //   that.model.CardPurseId &&
+      //   parseCurrency(value, that.options) > 150000
+      // ) {
+      //   callback(new Error(`Максимальная сумма 150000 руб`));
+      // } else if (
+      //   that.model.WmpPurseId &&
+      //   parseCurrency(value, that.options) > 1500000
+      // ) {
+      //   callback(new Error(`Максимальная сумма 1500000 руб`));
+      // } else if (
+      //   that.model.CardPurseId &&
+      //   parseCurrency(value, that.options) > 150000
+      // ) {
+      //   callback(new Error(`Максимальная сумма 150000 руб`));
     };
     return {
       pickerOptions: {
@@ -336,7 +381,7 @@ export default {
           let oneYearFromNow = new Date();
           oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
-          return time.getTime() > oneYearFromNow;
+          return time.getTime() < Date.now() || time.getTime() > oneYearFromNow;
         },
         shortcuts: [
           {
@@ -348,10 +393,18 @@ export default {
             },
           },
           {
-            text: 'Одну неделю',
+            text: 'На неделю',
             onClick(picker) {
               const date = new Date();
               date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            },
+          },
+          {
+            text: 'На месяц',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
               picker.$emit('pick', date);
             },
           },
@@ -362,7 +415,7 @@ export default {
       submitting: false,
       createDone: false,
       termsActive: false,
-      paymethodTypeCards: true,
+      paymethodTypeCards: false,
       paymethodTypeWmp: false,
       WmpCommission: 0,
       CardCommission: 0,
@@ -374,7 +427,7 @@ export default {
         Description: '',
         CategoryId: 2,
         Amount: 0,
-        CardPurseId: JSON.parse(getLastAddedPaymethod()).Guid || '',
+        CardPurseId: '',
         WmpPurseId: '',
       },
       deal: null,
@@ -407,8 +460,8 @@ export default {
           },
           {
             min: 3,
-            max: 320,
-            message: 'Кол-во символов от 3 до 320',
+            max: 140,
+            message: 'Кол-во символов от 3 до 140',
             trigger: 'blur',
           },
         ],
@@ -466,7 +519,12 @@ export default {
         locale: 'ru',
         valueRange: {
           min: this.MinAmount ? this.MinAmount : 0,
-          max: this.maxAmount,
+          max:
+            this.model.WmpPurseId && this.model.CardPurseId
+              ? 150000
+              : this.model.WmpPurseId
+              ? 1500000
+              : 150000,
         },
         allowNegative: false,
         distractionFree: false,
@@ -516,6 +574,14 @@ export default {
 
   created() {
     this.debounseGetCommission = _debounce(this.getCurrentCommission, 150);
+
+    let checkLastAddedCard = getLastAddedPaymethod();
+
+    if (checkLastAddedCard) {
+      let guidLastAddedCard = JSON.parse(getLastAddedPaymethod()).Guid;
+      guidLastAddedCard &&
+        this.$set(this.model, 'CardPurseId', guidLastAddedCard);
+    }
   },
 
   mounted() {
@@ -523,14 +589,15 @@ export default {
       this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
       this.paymethodTypeWmp = true;
     }
-    // if (this.paymethods.length > 0) {
-    //   this.paymethodTypeCards = true;
-    // }
+
+    if (this.paymethods.length > 0) {
+      this.paymethodTypeCards = true;
+    }
   },
 
   methods: {
     ...mapActions('profile', ['toggleDialogPaymethod']),
-    ...mapActions('deals', ['createDeal']),
+    ...mapActions('contract', ['createContract']),
 
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
@@ -551,7 +618,7 @@ export default {
           PayMethods: this.getPayMethods,
         };
         console.log('model', model);
-        this.createDeal(model)
+        this.createContract(model)
           .then(deal => {
             this.resetForm(formName);
             this.createDone = true;
@@ -617,9 +684,6 @@ export default {
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     width: 363px;
     height: 287px;
@@ -627,25 +691,69 @@ export default {
     background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
   }
 
+  &__items {
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: $mq-mobile) {
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
   &__item {
     color: #0f213c;
     font-size: 12px;
     margin-right: 15px;
+    display: flex;
+    align-items: center;
+    min-width: 71px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+
+    &:not(:last-child) {
+      margin-bottom: 3px;
+    }
+
+    @media (max-width: $mq-mobile) {
+      flex-direction: column;
+      margin-bottom: 5px;
+    }
+  }
+
+  &__icon {
+    margin-right: 3px;
+    &--card {
+      font-size: 16px;
+    }
+    &--webmoney {
+      width: 13px;
+      font-size: 16px;
+
+      path {
+        fill: rgba(#0f213c, 0.65);
+      }
+    }
   }
 
   &__icon-info {
     font-size: 20px;
     color: #78a9d9;
-    margin-right: 6px;
+    margin-right: 12px;
   }
 
   &__title {
-    font-size: 14px;
+    font-size: 13px;
+    min-width: 135px;
     margin-right: 15px;
   }
 
   &__value {
     font-weight: 600;
+    margin-right: 2px;
   }
 }
 
@@ -719,8 +827,6 @@ export default {
     }
   }
 }
-
-
 
 .el-radio-button-inner {
   height: 80px;

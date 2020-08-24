@@ -1,41 +1,73 @@
 import request from '@/utils/request';
 import { handleDataReceived } from '@/utils/common';
 
-export function getCommission(amount) {
+export function getDeals(data) {
+  const {
+    offset,
+    limit,
+    startDate,
+    endDate,
+    search,
+    statuses,
+    payMethod,
+    contractId,
+  } = data;
   return request({
-    url: 'api/Commission',
+    url: `api/Deals`,
     method: 'get',
-    params: { amount },
+    params: {
+      offset,
+      limit,
+      startDate,
+      endDate,
+      search,
+      statuses,
+      payMethod,
+      contractId,
+    },
   }).then(handleDataReceived);
 }
 
-export function getContracts(data) {
-  const { offset, limit } = data;
+export function getDeal(id) {
   return request({
-    url: 'api/Contracts',
-    method: 'get',
-    params: { offset, limit },
-  }).then(handleDataReceived);
-}
-
-export function getContract(id) {
-  return request({
-    url: `api/Contracts/${id}`,
+    url: `api/deals/${id}`,
     method: 'get',
   }).then(handleDataReceived);
 }
 
-export function getContractExtended(id) {
+export function getDealDetails(id) {
   return request({
-    url: `api/Contracts/${id}/extended`,
+    url: `api/deals/${id}/deal-details`,
     method: 'get',
   }).then(handleDataReceived);
 }
 
-export function createDeal(data) {
+export function getDealsStatus() {
   return request({
-    url: 'api/Contracts',
-    method: 'post',
-    data,
+    url: 'api/deals/statuses',
+    method: 'get',
+  }).then(handleDataReceived);
+}
+
+export function getByDisputeDeal(disputeGuid) {
+  return request({
+    url: `api/deals/${disputeGuid}/get-by-dispute-guid`,
+    method: 'get',
+  }).then(handleDataReceived);
+}
+
+export function sendClaimLink({ id, email }) {
+  return request({
+    url: `api/deals/${id}/send-claim-link`,
+    method: 'get',
+    params: { email },
+  }).then(handleDataReceived);
+}
+
+export function createClaim({ disputeGuid, email, message }) {
+  return request({
+    url: `api/deals/${disputeGuid}/create-claim`,
+    method: 'get',
+    params: { email, message },
   }).then(handleDataReceived);
 }

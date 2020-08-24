@@ -27,10 +27,10 @@
         <div class="bullshit__oops">OOPS!</div>
         <div class="bullshit__headline">{{ message }}</div>
         <div class="bullshit__info">
-          Пожалуйста, проверьте правильность введенного вами URL или нажмите
-          кнопку ниже, чтобы вернуться на главную страницу.
+          Пожалуйста, проверьте правильность введенного вами URL <span v-if="token">или нажмите
+          кнопку ниже, чтобы вернуться на главную страницу</span>
         </div>
-        <router-link to="/">
+        <router-link v-if="token" to="/">
           <el-button type="primary">На главную</el-button>
         </router-link>
       </div>
@@ -39,12 +39,20 @@
 </template>
 
 <script>
+import { getToken } from '@/utils/auth';
+
 export default {
   name: 'Page404',
+  data: () => ({
+    token: '',
+  }),
   computed: {
     message() {
       return 'Страница не существует';
     },
+  },
+  created() {
+    this.token = getToken();
   },
 };
 </script>

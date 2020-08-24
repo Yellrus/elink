@@ -1,10 +1,10 @@
 import { Message } from 'element-ui';
 import {
-  createDeal,
+  createContract,
   getContracts,
   getContract,
   getContractExtended,
-} from '@/api/deals';
+} from '@/api/contract';
 
 const state = {
   deal: {},
@@ -32,11 +32,11 @@ const mutations = {
 };
 
 const actions = {
-  createDeal({ commit }, data) {
+  createContract({ commit }, data) {
     return new Promise((resolve, reject) => {
-      createDeal(data)
+      createContract(data)
         .then(response => {
-          console.log('response CreateDeal', response);
+          console.log('response CreateContract', response);
           commit('SET_DEAL', 'true');
 
           resolve(response);

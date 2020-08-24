@@ -1,67 +1,6 @@
 <template>
   <div class="auth-work">
-    Auth request...
-    <svg
-      id="L2"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      x="0px"
-      y="0px"
-      viewBox="0 0 100 100"
-      enable-background="new 0 0 100 100"
-      xml:space="preserve"
-    >
-      <circle
-        fill="none"
-        stroke="#fff"
-        stroke-width="4"
-        stroke-miterlimit="10"
-        cx="50"
-        cy="50"
-        r="48"
-      />
-      <line
-        fill="none"
-        stroke-linecap="round"
-        stroke="#fff"
-        stroke-width="4"
-        stroke-miterlimit="10"
-        x1="50"
-        y1="50"
-        x2="85"
-        y2="50.5"
-      >
-        <animateTransform
-          attributeName="transform"
-          dur="2s"
-          type="rotate"
-          from="0 50 50"
-          to="360 50 50"
-          repeatCount="indefinite"
-        />
-      </line>
-      <line
-        fill="none"
-        stroke-linecap="round"
-        stroke="#fff"
-        stroke-width="4"
-        stroke-miterlimit="10"
-        x1="50"
-        y1="50"
-        x2="49.5"
-        y2="74"
-      >
-        <animateTransform
-          attributeName="transform"
-          dur="15s"
-          type="rotate"
-          from="0 50 50"
-          to="360 50 50"
-          repeatCount="indefinite"
-        />
-      </line>
-    </svg>
+    <loading-data />
   </div>
 </template>
 
@@ -69,10 +8,11 @@
 import { param2Obj } from '@/utils/common';
 import { Message } from 'element-ui';
 import { getToken } from '@/utils/auth';
+import LoadingData from '../../components/LoadingData/index';
 
 export default {
   name: 'AuthWork',
-
+  components: { LoadingData },
   beforeCreate() {
     if (getToken()) {
       this.$router.replace('/');
@@ -107,7 +47,10 @@ svg {
   height: 100px;
   margin: 20px;
   display: inline-block;
-  fill: #fff;
+  fill: #337ab7;
+  path {
+    fill: #337ab7;
+  }
 }
 .auth-work {
   width: 100vw;
@@ -115,8 +58,8 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #97a8be;
-  color: #fff;
+  background-color: #f9fafc;
+  color: #337ab7;
   flex-direction: column;
 }
 </style>

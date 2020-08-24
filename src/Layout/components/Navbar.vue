@@ -10,6 +10,12 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
+      <div class="nav-create-btn">
+        <router-link to="/contracts/create">
+
+          <create-btn />
+        </router-link>
+      </div>
       <el-dropdown
         placement="bottom-start"
         class="avatar-container right-menu-item hover-effect"
@@ -28,8 +34,8 @@
           <router-link to="/profile">
             <el-dropdown-item>Профиль</el-dropdown-item>
           </router-link>
-          <router-link to="/">
-            <el-dropdown-item>Главная</el-dropdown-item>
+          <router-link to="/contracts/create">
+            <el-dropdown-item>Создать</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">Выйти</span>
@@ -45,9 +51,11 @@ import { mapGetters, mapState } from 'vuex';
 import Breadcrumb from '@/components/Breadcrumb';
 import Hamburger from '@/components/Hamburger';
 import UserAvatar from '../../components/UserAvatar/index';
+import CreateBtn from '../../components/CreateBtn/index';
 
 export default {
   components: {
+    CreateBtn,
     UserAvatar,
     Breadcrumb,
     Hamburger,
@@ -76,6 +84,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.nav-create-btn {
+  margin-right: 30px;
+}
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -107,6 +118,8 @@ export default {
 
   .right-menu {
     float: right;
+    display: flex;
+    align-items: center;
     height: 100%;
     line-height: 1;
 
@@ -137,7 +150,6 @@ export default {
     }
 
     .avatar-container {
-
       .avatar-wrapper {
         display: flex;
         align-items: center;

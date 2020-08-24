@@ -1,7 +1,8 @@
 import { getInfo, addNewPaymethod, removePaymethod } from '@/api/profile';
 import { Message } from 'element-ui';
-import { setLastAddedPaymethod } from '@/utils/profile';
+import { setLastAddedPaymethod, removeLastAddedPaymethod } from '@/utils/profile';
 import { getPassportDataLink } from '@/api/profile';
+import { getLastAddedPaymethod } from '../../utils/profile';
 
 const state = {
   wmid: null,
@@ -37,6 +38,16 @@ const mutations = {
   },
 
   REMOVE_PAYMETHOD: (state, id) => {
+    let checkLastAddedCard = getLastAddedPaymethod();
+
+    if (checkLastAddedCard) {
+      let IdLastAddedCard = JSON.parse(getLastAddedPaymethod()).Id;
+      if (IdLastAddedCard && IdLastAddedCard === id) {
+        removeLastAddedPaymethod();
+        state.lastAddedPaymethod = {};
+      }
+    }
+
     let idx = state.paymethods.findIndex(item => item.Id === id);
     state.paymethods.splice(idx, 1);
   },
@@ -131,12 +142,11 @@ const actions = {
       removePaymethod(id)
         .then(card => {
           commit('REMOVE_PAYMETHOD', id);
-
           resolve(card);
         })
         .catch(error => {
           Message({
-            message: error.Description || 'Error',
+            message: error.Description || error.Error || 'Error',
             type: 'error',
             duration: 3 * 1000,
           });

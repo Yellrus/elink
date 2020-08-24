@@ -3,7 +3,9 @@
     min-height: 100%;
     transition: margin-left 0.28s;
     margin-left: $sideBarWidth;
-    background-color: #f9fafc;
+    //background-color: #f9fafc;
+    background-color: #F5F4F8;
+    //background-color: #f0f2f5;
     position: relative;
   }
 
@@ -56,6 +58,8 @@
 
     .svg-icon {
       margin-right: 16px;
+      font-size: 20px;
+      margin-bottom: 2px;
     }
 
     .sub-el-icon {
@@ -109,7 +113,7 @@
         padding: 0 !important;
 
         .svg-icon {
-          margin-left: 20px;
+          margin-left: 16px;
         }
 
         .sub-el-icon {
@@ -125,7 +129,7 @@
         padding: 0 !important;
 
         .svg-icon {
-          margin-left: 20px;
+          margin-left: 16px;
         }
 
         .sub-el-icon {

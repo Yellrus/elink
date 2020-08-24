@@ -37,48 +37,82 @@ export const constantRoutes = [
   },
 
   {
-    path: '/user',
+    path: '/contracts',
     component: Layout,
-    redirect: '/user/deals',
-    name: 'UserDeals',
+    redirect: '/contracts',
     meta: {
-      title: 'Сделки',
+      title: 'Предложения',
       icon: 's-cooperation',
     },
     children: [
       {
         path: 'create',
-        component: () => import('@/views/user/deals/create'),
-        name: 'UserDealsCreate',
+        component: () => import('@/views/user/contracts/create'),
+        name: 'UserContractCreate',
         meta: { title: 'Создать', icon: 'edit-outline' },
       },
       {
-        path: 'contracts',
-        component: () => import('@/views/user/deals/contracts'),
-        name: 'UserDealsContracts',
-        meta: { title: 'Предложения', icon: 'sell' },
+        path: '/contracts',
+        component: () => import('@/views/user/contracts/list'),
+        name: 'UserContracts',
+        meta: { title: 'Мои предложения', icon: 's-unfold', breadcrumb: false },
       },
       {
-        path: 'contracts/:id',
-        component: () => import('@/views/user/deals/contractDetail'),
-        name: 'UserDealsContractsDetail',
-        meta: { title: 'Контракт', icon: 'edit-outline' },
+        path: '/contracts/:id',
+        component: () => import('@/views/user/contracts/detail'),
+        name: 'UserContractsDetail',
+        meta: {
+          title: 'Контракт',
+          icon: 'edit-outline',
+          noCache: true,
+        },
         hidden: true,
-      },
-      {
-        path: 'deals',
-        component: () => import('@/views/user/deals/deals'),
-        name: 'UserDealsList',
-        meta: { title: 'Мои сделки', icon: 's-unfold' },
       },
     ],
   },
 
+  {
+    path: '/deals',
+    component: Layout,
+    redirect: '/deals',
+    meta: {
+      title: 'Мои продажи',
+      icon: 's-cooperation',
+    },
+    children: [
+      {
+        path: '/deals',
+        component: () => import('@/views/user/deals/list'),
+        name: 'UserDealsList',
+        meta: { title: 'Мои продажи', icon: 'sell', breadcrumb: false },
+      },
+
+      {
+        path: '/deals/:id',
+        component: () => import('@/views/user/deals/detail'),
+        name: 'UserDealsDetail',
+        meta: {
+          title: 'Продажа',
+          icon: 'edit-outline',
+          noCache: true,
+        },
+        hidden: true,
+      },
+    ],
+  },
 
   {
     path: '/contract/:id',
     component: () => import('@/views/pay-confirm/index'),
     name: 'Pay Confirm',
+    meta: { public: true },
+    hidden: true,
+  },
+
+  {
+    path: '/c/:id',
+    component: () => import('@/views/claim/create'),
+    name: 'Claim Crated',
     meta: { public: true },
     hidden: true,
   },
@@ -127,6 +161,14 @@ export const constantRoutes = [
   },
 
   {
+    path: '/payment-timeout',
+    component: () => import('@/views/action-page/pay-timeout'),
+    name: 'Pay Timeout',
+    meta: { public: true },
+    hidden: true,
+  },
+
+  {
     path: '/auth-work',
     component: () => import('@/views/login/auth-work'),
     hidden: true,
@@ -141,6 +183,7 @@ export const constantRoutes = [
   {
     path: '/404',
     hidden: true,
+    meta: { public: true },
     component: () => import('@/views/error-page/404'),
   },
 

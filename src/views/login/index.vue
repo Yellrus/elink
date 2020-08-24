@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import { BASE_URL } from '../../utils/request';
+
 export default {
   name: 'Login',
   data() {
@@ -113,7 +115,7 @@ export default {
     },
 
     login() {
-      window.location.href = 'http://172.16.29.168:99/login';
+      window.location.href = `${BASE_URL}/login`;
     },
   },
 };

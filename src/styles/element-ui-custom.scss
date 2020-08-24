@@ -51,3 +51,20 @@
 .el-textarea textarea {
   resize: none;
 }
+
+.el-pagination {
+  @media (max-width: $mq-mobile) {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__total {
+    @media (max-width: $mq-mobile) {
+      position: absolute;
+      top: -25px;
+      left: 0;
+    }
+  }
+}
+

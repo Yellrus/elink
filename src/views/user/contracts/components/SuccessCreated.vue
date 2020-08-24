@@ -8,7 +8,7 @@
         </div>
         <p class="created-deal__desc">
           Публичное предложение
-          <router-link :to="`/contract/${deal.Id}`">
+          <router-link :to="`/contracts/${deal.Id}`">
             <el-link
               class="created-deal__deal-name"
               type="primary"
@@ -20,7 +20,7 @@
         </p>
         <p class="created-deal__desc">
           и будет активно до
-          <span class="created-deal__deal-name">{{ deal.duration | humansDateFormat }}</span>
+          <span class="created-deal__deal-name">{{ deal.Duration | humansDateFormat }}</span>
         </p>
       </div>
 
@@ -35,7 +35,7 @@
             v-clipboard:copy="url"
             v-clipboard:success="clipboardSuccess"
             type="primary"
-            icon="el-icon-document"
+            icon="el-icon-document-copy"
             class="created-deal__btn-copy"
           >
             Копировать
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import clipboard from '@/directive/clipboard/index';
+import clipboard from '@/directive/clipboard';
 import SocialSharing from '@/components/SocialSharing';
 
 export default {
@@ -75,7 +75,7 @@ export default {
     url() {
       return this.deal.Id
         ? `${location.host}/contract/${this.deal.Id}`
-        : `${location.host}/user/deals/create`;
+        : `${location.host}/contracts/create`;
     },
 
     sharing() {

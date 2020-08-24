@@ -1,8 +1,9 @@
 <template>
   <div class="page-container">
+    <loading-data v-if="loading" />
     <div class="page-user-info">
       <div class="page-user-info__user">
-        <user-short-info v-if="isLoadedProfile"/>
+        <user-short-info v-if="isLoadedProfile" />
       </div>
 
       <div class="page-user-info__content">
@@ -31,13 +32,15 @@
 <script>
 import UserShortInfo from './components/UserShortInfo';
 import PaymethodViewTab from './components/Paymethods';
-import { mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
+import LoadingData from '../../components/LoadingData/index';
 
 export default {
   name: 'Profile',
-  components: { PaymethodViewTab, UserShortInfo },
+  components: { LoadingData, PaymethodViewTab, UserShortInfo },
   data() {
     return {
+      loading: false,
       componentKey: 0,
       tabMapOptions: [
         // { label: 'Личные данные', key: 'passport' },
@@ -62,6 +65,9 @@ export default {
   },
 
   watch: {
+    // при изменениях маршрута запрашиваем данные снова
+    $route: 'fetchProfile',
+
     activeName(activeTabMenu) {
       this.$router.push(`${this.$route.path}?tab=${activeTabMenu}`);
 
@@ -80,11 +86,23 @@ export default {
   },
 
   created() {
+    this.fetchProfile();
     // init the default selected tab
     const tab = this.$route.query.tab;
     if (tab) {
       this.activeName = tab;
     }
+  },
+
+  methods: {
+    ...mapActions('profile', ['getInfo']),
+    fetchProfile() {
+      this.getInfo()
+        .then(() => {
+          this.loading = true;
+        })
+        .finally(() => (this.loading = false));
+    },
   },
 };
 </script>

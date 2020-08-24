@@ -3,7 +3,7 @@ import { Message } from 'element-ui';
 import store from '@/store';
 import { getToken } from '@/utils/auth';
 
-export const BASE_URL = 'http://172.16.29.168:99/';
+export const BASE_URL = 'http://172.16.29.23:99/';
 
 // create an axios instance
 const service = axios.create({

@@ -1,9 +1,8 @@
 <template>
   <div class="page-container">
-    <loading-data :is-loading="loading" />
-
-    <template v-if="!loading">
-      <h1> Contract Detail ID: {{ contractDetail.Id }}</h1>
+    <loading-data v-if="loading" />
+    <template v-if="!loading && dealDetail">
+      <h1>Contract Detail ID: {{ dealDetail.Id }}</h1>
     </template>
 
   </div>
@@ -19,31 +18,32 @@ export default {
   data: () => ({
     id: null,
     loading: false,
-    contractDetail: null,
+    dealDetail: null,
   }),
 
   watch: {
     // при изменениях маршрута запрашиваем данные снова
-    $route: 'fetchContract',
+    $route: 'fetchDeal',
   },
 
   created() {
     this.id = this.$route.params.id;
 
-    this.fetchContract();
+    this.fetchDeal();
   },
 
-
   methods: {
-    ...mapActions('deals', ['getContractDetail']),
+    ...mapActions('deal', ['getDealDetail']),
 
-    fetchContract() {
+    fetchDeal() {
       this.loading = true;
-      this.getContractDetail(this.id)
+      this.getDealDetail(this.id)
         .then(data => {
-          this.contractDetail = data;
+          this.dealDetail = data;
         })
-        .finally(() => (this.loading = false));
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };
