@@ -49,7 +49,7 @@ export const constantRoutes = [
         path: 'create',
         component: () => import('@/views/user/contracts/create'),
         name: 'UserContractCreate',
-        meta: { title: 'Создать', icon: 'edit-outline' },
+        meta: { title: 'Создать', icon: 'edit-outline', noCache: true },
       },
       {
         path: '/contracts',

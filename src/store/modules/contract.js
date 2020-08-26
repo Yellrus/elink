@@ -36,7 +36,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       createContract(data)
         .then(response => {
-          console.log('response CreateContract', response);
+
           commit('SET_DEAL', 'true');
 
           resolve(response);
@@ -76,7 +76,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getContract(data)
         .then(contract => {
-          console.log('response contract detail', contract);
+
           commit('SET_CONTRACT_DETAIL', contract);
 
           resolve(contract);
@@ -96,7 +96,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getContractExtended(data)
         .then(contract => {
-          console.log('response contract', contract);
+
           commit('SET_CONTRACT', contract);
 
           resolve(contract);

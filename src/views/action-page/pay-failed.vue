@@ -27,6 +27,16 @@ export default {
     margin-bottom: 10px;
   }
 
+  &__title {
+    padding: 25px 17px;
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: 400;
+    color: #f56c6c;
+    background: #fef0f0;
+    border-color: #fbc4c4;
+  }
+
   &__icon {
     &--error {
       color: $pink;

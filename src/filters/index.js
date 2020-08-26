@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+
 import { getCategories } from '@/utils/profile';
 
 /**
@@ -52,6 +53,17 @@ export function formatDateYear(date) {
 }
 
 /**
+ * @param {String} date
+ */
+export function relativeDateFromNow(date) {
+  if (!date) {
+    return null;
+  }
+
+  return dayjs(date).fromNow();
+}
+
+/**
  * Upper case first char
  * @param {String} string
  */
@@ -75,6 +87,6 @@ export function getCategoryName(id) {
  */
 
 export const toThousandFilter = (value) => {
-  let val = (value).toFixed(2).replace('.', ',');
+  let val = (+value || 0).toFixed(2).replace('.', ',');
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };

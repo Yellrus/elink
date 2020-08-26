@@ -6,9 +6,6 @@
 
       <!--  Pay Info -->
       <div class="pay__info">
-<!--        <div class="pay__category">-->
-<!--          {{ contract.CategoryId | getCategoryName }}-->
-<!--        </div>-->
         <div class="pay__name">
           {{ contract.Name | uppercaseFirst }}
         </div>
@@ -17,105 +14,131 @@
           {{ contract.Description }}
         </div>
         <div class="pay__amount">
-          {{ contract.Amount | toThousandFilter }} <span class="pay__currency">₽</span>
+          {{ contract.Amount | toThousandFilter }}
+          <span class="pay__currency">₽</span>
         </div>
       </div>
 
-      <!--  Paymethods-->
-      <div
-        v-if="contract.WmpPurse && contract.Card"
-        class="radio-paymethod-group pay__paymethods"
+      <template v-if="contract.IsClosed">
+        <div class="pay__message pay__message--error">
+          Данное предложение закрыто
+        </div>
+      </template>
+
+      <template
+        v-else-if="
+          isInvalidDurationDate(contract.Duration) ||
+            (contract.Count <= 0 && isInvalidDurationDate(contract.Duration))
+        "
       >
-        <span class="radio-paymethod-group__heading"
-          >Выберите платежную систему</span
-        >
-        <div class="radio-paymethod-group__item paymethod-radio">
-          <input
-            id="paymethod_1"
-            v-model="paymethod"
-            value="2"
-            class="paymethod-radio__input"
-            name="paymethodType"
-            type="radio"
-          />
-          <label class="paymethod-radio__name" for="paymethod_1">
-            <span class="paymethod-radio__logo">
-              <CreditCardBlackLogo
-                class="paymethod-radio__icon paymethod-radio__icon--cards"
-              />
-            </span>
-            <span class="paymethod-radio__name-title">
-              Банковская карта
-            </span>
-            <span class="paymethod-radio__name-text">
-              Visa, MasterCard, Maestro, Мир</span
-            >
-          </label>
+        <div class="pay__message pay__message--error">
+          Истекло время действия данного предложения
         </div>
-        <div class="radio-paymethod-group__item paymethod-radio">
-          <input
-            id="paymethod_2"
-            v-model="paymethod"
-            class="paymethod-radio__input"
-            value="1"
-            name="paymethodType"
-            type="radio"
-          />
-          <label class="paymethod-radio__name" for="paymethod_2">
-            <span class="paymethod-radio__logo">
-              <WebmoneyLogo
-                class="paymethod-radio__icon paymethod-radio__icon--webmoney"
-              />
-            </span>
-            <span class="paymethod-radio__name-title">WebMoney кошелёк</span>
-            <span class="paymethod-radio__name-text"> P - кошелёк</span>
-          </label>
+      </template>
+
+      <template v-else-if="contract.Count <= 0">
+        <div class="pay__message pay__message--warning">
+          Нет в наличии, свяжитесь с продавцом
         </div>
-      </div>
+      </template>
 
       <template v-else>
-        <div class="pay__paymethods">
-          <span class="radio-paymethod-group__heading">Способ оплаты</span>
+        <!--  Paymethods-->
+        <div
+          v-if="contract.WmpPurse && contract.Card"
+          class="radio-paymethod-group pay__paymethods"
+        >
+          <span class="radio-paymethod-group__heading"
+            >Выберите платежную систему</span
+          >
           <div class="radio-paymethod-group__item paymethod-radio">
             <input
-              id="paymethod_one"
+              id="paymethod_1"
               v-model="paymethod"
-              :value="contract.Card ? 2 : 1"
+              value="2"
               class="paymethod-radio__input"
               name="paymethodType"
               type="radio"
             />
-            <label class="paymethod-radio__name" for="paymethod_one">
-              <template v-if="contract.Card">
-                <span class="paymethod-radio__logo">
-                  <CreditCardBlackLogo
-                    class="paymethod-radio__icon paymethod-radio__icon--cards"
-                  />
-                </span>
-                <span class="paymethod-radio__name-title">
-                  Банковская карта
-                </span>
-                <span class="paymethod-radio__name-text">
-                  Visa, MasterCard, Maestro, Мир</span
-                >
-              </template>
-              <template v-if="contract.WmpPurse">
-                <span class="paymethod-radio__logo">
-                  <WebmoneyLogo
-                    class="paymethod-radio__icon paymethod-radio__icon--webmoney"
-                  />
-                </span>
-                <span class="paymethod-radio__name-title"
-                  >WebMoney кошелёк</span
-                >
-                <span class="paymethod-radio__name-text"> P - кошелёк</span>
-              </template>
+            <label class="paymethod-radio__name" for="paymethod_1">
+              <span class="paymethod-radio__logo">
+                <CreditCardBlackLogo
+                  class="paymethod-radio__icon paymethod-radio__icon--cards"
+                />
+              </span>
+              <span class="paymethod-radio__name-title">
+                Банковская карта
+              </span>
+              <span class="paymethod-radio__name-text">
+                Visa, MasterCard, Maestro, Мир</span
+              >
+            </label>
+          </div>
+          <div class="radio-paymethod-group__item paymethod-radio">
+            <input
+              id="paymethod_2"
+              v-model="paymethod"
+              class="paymethod-radio__input"
+              value="1"
+              name="paymethodType"
+              type="radio"
+            />
+            <label class="paymethod-radio__name" for="paymethod_2">
+              <span class="paymethod-radio__logo">
+                <WebmoneyLogo
+                  class="paymethod-radio__icon paymethod-radio__icon--webmoney"
+                />
+              </span>
+              <span class="paymethod-radio__name-title">WebMoney кошелёк</span>
+              <span class="paymethod-radio__name-text"> P - кошелёк</span>
             </label>
           </div>
         </div>
-      </template>
 
-      <el-button type="primary" @click="onSubmit">Оплатить</el-button>
+        <template v-else>
+          <div class="pay__paymethods">
+            <span class="radio-paymethod-group__heading">Способ оплаты</span>
+            <div class="radio-paymethod-group__item paymethod-radio">
+              <input
+                id="paymethod_one"
+                v-model="paymethod"
+                :value="contract.Card ? 2 : 1"
+                class="paymethod-radio__input"
+                name="paymethodType"
+                type="radio"
+              />
+              <label class="paymethod-radio__name" for="paymethod_one">
+                <template v-if="contract.Card">
+                  <span class="paymethod-radio__logo">
+                    <CreditCardBlackLogo
+                      class="paymethod-radio__icon paymethod-radio__icon--cards"
+                    />
+                  </span>
+                  <span class="paymethod-radio__name-title">
+                    Банковская карта
+                  </span>
+                  <span class="paymethod-radio__name-text">
+                    Visa, MasterCard, Maestro, Мир</span
+                  >
+                </template>
+                <template v-if="contract.WmpPurse">
+                  <span class="paymethod-radio__logo">
+                    <WebmoneyLogo
+                      class="paymethod-radio__icon paymethod-radio__icon--webmoney"
+                    />
+                  </span>
+                  <span class="paymethod-radio__name-title"
+                    >WebMoney кошелёк</span
+                  >
+                  <span class="paymethod-radio__name-text"> P - кошелёк</span>
+                </template>
+              </label>
+            </div>
+          </div>
+        </template>
+
+        <el-button type="primary" @click="onSubmit">Оплатить</el-button>
+      </template>
     </div>
   </div>
 </template>
@@ -126,6 +149,7 @@ import { mapActions } from 'vuex';
 import { BASE_URL } from '@/utils/request';
 import CreditCardBlackLogo from '../../../public/creditCardBlack.svg';
 import WebmoneyLogo from '../../../public/webmoney-logo.svg';
+import dayjs from 'dayjs';
 
 export default {
   name: 'PayConfirm',
@@ -171,7 +195,16 @@ export default {
     },
 
     onSubmit() {
-      location.replace(this.url);
+      this.loading = true;
+
+      window.location.href = this.url;
+    },
+
+    isInvalidDurationDate(durationDate) {
+      const today = dayjs(new Date());
+      const pastDate = dayjs(durationDate);
+      // дата с сервера до сегодняшнего дня
+      return pastDate.isBefore(today);
     },
   },
 };
@@ -189,9 +222,28 @@ export default {
     margin: 0 -25px 15px;
     padding: 23px 25px 6px;
 
-    @media(max-width: $mq-mobile) {
+    @media (max-width: $mq-mobile) {
       margin: 0 -15px 25px;
       padding: 23px 15px 10px;
+    }
+  }
+
+  &__message {
+    background-color: #fff3e0;
+    color: #f57c00;
+    padding: 25px 17px;
+    border-radius: 20px;
+    font-weight: 400;
+
+    &--error {
+      color: #f56c6c;
+      background: #fef0f0;
+      border-color: #fbc4c4;
+    }
+
+    &--wraning {
+      background-color: #fff3e0;
+      color: #f57c00;
     }
   }
 
@@ -224,7 +276,7 @@ export default {
     margin-bottom: 28px;
     padding: 0 20px;
 
-    @media(max-width: $mq-tablet-vertical) {
+    @media (max-width: $mq-tablet-vertical) {
       padding: 0;
     }
   }

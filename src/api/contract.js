@@ -1,11 +1,12 @@
 import request from '@/utils/request';
 import { handleDataReceived } from '@/utils/common';
 
-export function getCommission(amount) {
+export function getCommission(data) {
+  const { amount, payMethod } = data;
   return request({
     url: 'api/Commission',
     method: 'get',
-    params: { amount },
+    params: { amount, payMethod },
   }).then(handleDataReceived);
 }
 

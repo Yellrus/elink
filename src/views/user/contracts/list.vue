@@ -8,7 +8,7 @@
           <data-empty
             v-if="items.length <= 0 && !loadingData"
             :btn-title="btnDataEmptyTitle"
-            :btn-url="'/contracts/create'"
+            :btn-url="`/contracts/create`"
           >
             <template v-slot:text>
               {{ textDataEmpty }}
@@ -23,7 +23,7 @@
             <div class="contract">
               <arrow v-if="device !== 'mobile'" />
               <router-link
-                :to="`contracts/${contract.Id}`"
+                :to="`/contracts/${contract.Id}`"
                 tag="div"
                 class="contract__body"
               >
@@ -242,8 +242,6 @@ export default {
 
   created() {
     this.fetchContracts();
-
-    console.log('dayjs', dayjs(new Date()));
   },
 
   methods: {

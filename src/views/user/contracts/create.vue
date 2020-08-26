@@ -103,7 +103,10 @@
                   >
                 </label>
               </div>
-              <div class="radio-paymethod-group__item paymethod-radio">
+              <div
+                v-if="wmpPurse"
+                class="radio-paymethod-group__item paymethod-radio"
+              >
                 <input
                   id="paymethod_2"
                   v-model="paymethodTypeWmp"
@@ -140,7 +143,7 @@
                   placeholder="Выбрать из списка"
                 >
                   <template slot="prefix">
-                    <el-icon class="el-icon-wallet"></el-icon>
+                    <el-icon class="el-icon-wallet" />
                   </template>
                   <el-option
                     v-for="item in paymethods"
@@ -208,7 +211,7 @@
               <el-input
                 v-model="model.Amount"
                 v-currency="options"
-                @input="onInputAmount"
+                class="amount-input"
               >
                 <template slot="append"
                   ><el-icon class="el-icon-money"
@@ -235,35 +238,32 @@
             <div class="commission__items">
               <div class="commission__row">
                 <span class="commission__title">Коммиссия:</span>
-                <span class="commission__item"
-                  ><el-icon
-                    class="commission__icon commission__icon--card el-icon-bank-card"
-                  />
-                  <span class="commission__value">{{ CardCommission }}</span
-                  >&nbsp; ₽</span
-                >
                 <span class="commission__item">
                   <WebmoneyLogo
                     class="commission__icon commission__icon--webmoney"
                   />
-                  <span class="commission__value">{{ WmpCommission }}</span
+                  <span class="commission__value">{{
+                    WmpCommission | toThousandFilter
+                  }}</span
+                  >&nbsp; ₽</span
+                >
+                <span class="commission__item"
+                  ><el-icon
+                    class="commission__icon commission__icon--card el-icon-bank-card"
+                  />
+                  <span class="commission__value">{{
+                    CardCommission | toThousandFilter
+                  }}</span
                   >&nbsp; ₽</span
                 >
               </div>
               <div class="commission__row">
                 <span class="commission__title">Максимальная сумма:</span>
-                <span class="commission__item"
-                  ><el-icon
-                    class="commission__icon commission__icon--card el-icon-bank-card"
-                  />
-                  <span class="commission__value">150 000</span>&nbsp; ₽</span
-                >
                 <span class="commission__item">
-                  <WebmoneyLogo
-                    class="commission__icon commission__icon--webmoney"
-                  />
-                  <span class="commission__value">150 000 000</span>&nbsp;
-                  ₽</span
+                  <span class="commission__value">{{
+                    MaxAmount | toThousandFilter
+                  }}</span
+                  >&nbsp; ₽</span
                 >
               </div>
             </div>
@@ -353,27 +353,15 @@ export default {
         return callback(new Error('Вам нужно указать стоимость'));
       }
 
-      if (parseCurrency(value, that.options) < that.MinAmount) {
-        callback(new Error(`Минимальная сумма ${that.MinAmount} ₽`));
-      } else {
-        callback();
+      if (value || 0) {
+        if (parseCurrency(value, that.options) < that.MinAmount) {
+          callback(new Error(`Минимальная сумма ${that.MinAmount} ₽`));
+        } else if (parseCurrency(value, that.options) > that.MaxAmount) {
+          callback(new Error(`Максимальная сумма ${that.MaxAmount} ₽`));
+        } else {
+          callback();
+        }
       }
-      // } else if (
-      //   that.model.WmpPurseId &&
-      //   that.model.CardPurseId &&
-      //   parseCurrency(value, that.options) > 150000
-      // ) {
-      //   callback(new Error(`Максимальная сумма 150000 руб`));
-      // } else if (
-      //   that.model.WmpPurseId &&
-      //   parseCurrency(value, that.options) > 1500000
-      // ) {
-      //   callback(new Error(`Максимальная сумма 1500000 руб`));
-      // } else if (
-      //   that.model.CardPurseId &&
-      //   parseCurrency(value, that.options) > 150000
-      // ) {
-      //   callback(new Error(`Максимальная сумма 150000 руб`));
     };
     return {
       pickerOptions: {
@@ -411,22 +399,22 @@ export default {
         ],
       },
       lastAddedPaymethod: null,
-      maxAmount: 10000000,
       submitting: false,
       createDone: false,
       termsActive: false,
-      paymethodTypeCards: false,
+      paymethodTypeCards: true,
       paymethodTypeWmp: false,
       WmpCommission: 0,
       CardCommission: 0,
       MinAmount: 0,
+      MaxAmount: 0,
       model: {
         Name: '',
         Duration: '',
         Count: 1,
         Description: '',
         CategoryId: 2,
-        Amount: 0,
+        Amount: '',
         CardPurseId: '',
         WmpPurseId: '',
       },
@@ -468,7 +456,7 @@ export default {
         Amount: [
           {
             validator: validateAmount,
-            trigger: 'blur',
+            trigger: 'change',
           },
         ],
         CardPurseId: [
@@ -517,15 +505,10 @@ export default {
       return {
         currency: 'RUB',
         locale: 'ru',
-        valueRange: {
-          min: this.MinAmount ? this.MinAmount : 0,
-          max:
-            this.model.WmpPurseId && this.model.CardPurseId
-              ? 150000
-              : this.model.WmpPurseId
-              ? 1500000
-              : 150000,
-        },
+        // valueRange: {
+        //   min: this.MinAmount,
+        //   max: this.MaxAmount,
+        // },
         allowNegative: false,
         distractionFree: false,
       };
@@ -550,6 +533,20 @@ export default {
 
       return null;
     },
+
+    getPayMethodForCommission() {
+      if (this.paymethodTypeWmp && this.paymethodTypeCards) {
+        return 3;
+      }
+
+      if (this.paymethodTypeCards) {
+        return 2;
+      } else if (this.paymethodTypeWmp) {
+        return 1;
+      }
+
+      return 2;
+    },
   },
 
   watch: {
@@ -557,6 +554,8 @@ export default {
       if (!newVal) {
         this.$set(this.model, 'CardPurseId', '');
       }
+
+      this.getCurrentCommission();
     },
 
     paymethodTypeWmp(newVal) {
@@ -569,12 +568,17 @@ export default {
           console.log('Нет wmp');
         }
       }
+
+      this.getCurrentCommission();
+    },
+
+    'model.Amount': function() {
+      if (this.numberValue > this.MaxAmount) return;
+      this.getCurrentCommission();
     },
   },
 
   created() {
-    this.debounseGetCommission = _debounce(this.getCurrentCommission, 150);
-
     let checkLastAddedCard = getLastAddedPaymethod();
 
     if (checkLastAddedCard) {
@@ -588,10 +592,8 @@ export default {
     if (this.wmpPurse) {
       this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
       this.paymethodTypeWmp = true;
-    }
-
-    if (this.paymethods.length > 0) {
-      this.paymethodTypeCards = true;
+    } else {
+      this.getCurrentCommission();
     }
   },
 
@@ -617,7 +619,7 @@ export default {
           Amount: this.numberValue,
           PayMethods: this.getPayMethods,
         };
-        console.log('model', model);
+
         this.createContract(model)
           .then(deal => {
             this.resetForm(formName);
@@ -637,21 +639,28 @@ export default {
       this.getLastPaymethod();
     },
 
-    getCurrentCommission(val) {
-      getCommission(val).then(commissions => {
-        const { CardCommission, WmpCommission, MinAmount } = commissions;
+    getCurrentCommission: _debounce(function() {
+      const data = {
+        amount: this.numberValue || 0,
+        payMethod: this.getPayMethodForCommission,
+      };
+
+      return getCommission(data).then(commissions => {
+        const {
+          CardCommission,
+          WmpCommission,
+          MinAmount,
+          MaxAmount,
+        } = commissions;
 
         this.CardCommission = CardCommission;
         this.WmpCommission = WmpCommission;
         this.MinAmount = MinAmount;
+        this.MaxAmount = MaxAmount;
+
+        this.numberValue > 0 && this.$refs['model'].validateField('Amount');
       });
-    },
-
-    onInputAmount() {
-      if (this.numberValue && this.numberValue > this.maxAmount) return;
-
-      this.debounseGetCommission(this.numberValue || 0);
-    },
+    }, 150),
 
     getLastPaymethod() {
       let data = getLastAddedPaymethod();
@@ -704,10 +713,10 @@ export default {
   &__item {
     color: #0f213c;
     font-size: 12px;
-    margin-right: 15px;
+    margin-right: 12px;
     display: flex;
     align-items: center;
-    min-width: 71px;
+    min-width: 40px;
   }
 
   &__row {
@@ -747,12 +756,12 @@ export default {
 
   &__title {
     font-size: 13px;
-    min-width: 135px;
+    min-width: 140px;
     margin-right: 15px;
   }
 
   &__value {
-    font-weight: 600;
+    font-weight: 500;
     margin-right: 2px;
   }
 }
@@ -833,5 +842,10 @@ export default {
   padding: 0 20px;
   border-radius: 40px;
   margin: 15px 0;
+}
+
+.amount-input {
+  font-size: 15px;
+  font-weight: 500;
 }
 </style>

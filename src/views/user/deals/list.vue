@@ -170,7 +170,7 @@ import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import Status from '@/components/Status';
-import Arrow from '../../../components/Arrow/index';
+import Arrow from '@/components/Arrow';
 //import Badge from '../../../components/Badge/index';
 
 export default {

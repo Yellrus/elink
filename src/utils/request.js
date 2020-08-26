@@ -1,9 +1,13 @@
 import axios from 'axios';
-import { Message } from 'element-ui';
+import { Message, MessageBox } from 'element-ui';
 import store from '@/store';
 import { getToken } from '@/utils/auth';
 
-export const BASE_URL = 'http://172.16.29.23:99/';
+const BASE_URL_DEV = 'http://172.16.29.23:99/';
+const BASE_URL_PROD = 'https://biz-api.wmkeeper.com/';
+
+export const BASE_URL =
+  process.env.NODE_ENV === 'development' ? BASE_URL_DEV : BASE_URL_PROD;
 
 // create an axios instance
 const service = axios.create({
@@ -26,7 +30,7 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log('123123', error); // for debug
+    console.log('error debug', error); // for debug
     return Promise.reject(error);
   }
 );
@@ -68,18 +72,38 @@ service.interceptors.response.use(
       //     });
       //   });
       // }
+
       return Promise.reject(new Error(response.message || 'Error'));
     } else {
       return response.data;
     }
   },
   error => {
-    console.log('err' + error); // for debug
+    if (error.response.status === 401) {
+      // to re-login
+      MessageBox.confirm(
+        'Вы вышли из системы, вы можете отменить, чтобы остаться на этой странице, или войти снова',
+        'Подтверждение выхода',
+        {
+          confirmButtonText: 'Перезайти',
+          cancelButtonText: 'Отмена',
+          type: 'warning',
+        }
+      ).then(() => {
+        store.dispatch('user/resetToken').then(() => {
+          location.reload();
+        });
+      });
+
+      return;
+    }
+
     Message({
       message: error.message,
       type: 'error',
       duration: 5 * 1000,
     });
+
     return Promise.reject(error);
   }
 );

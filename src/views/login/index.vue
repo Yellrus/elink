@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { BASE_URL } from '../../utils/request';
+import { BASE_URL } from '@/utils/request';
 
 export default {
   name: 'Login',

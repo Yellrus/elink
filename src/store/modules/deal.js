@@ -11,6 +11,7 @@ import {
 const state = {
   deals: [],
   deal: {},
+  dealDetail: {},
   disputeDeal: {},
   statuses: {},
 };
@@ -18,6 +19,10 @@ const state = {
 const mutations = {
   SET_DEAL: (state, deal) => {
     state.deal = deal;
+  },
+
+  SET_DEAL_DETAIL: (state, dealDetail) => {
+    state.deal = dealDetail;
   },
 
   SET_DEALS: (state, deals) => {
@@ -38,7 +43,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDeals(data)
         .then(deals => {
-          console.log('response Deals', deals);
+
           commit('SET_DEALS', deals);
 
           resolve(deals);
@@ -58,7 +63,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDeal(data)
         .then(deal => {
-          console.log('response Deal', deal);
+
           commit('SET_DEAL', deal);
 
           resolve(deal);
@@ -78,7 +83,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDealsStatus(data)
         .then(statuses => {
-          console.log('response Deals Status', statuses);
+
           commit('SET_STATUSES', statuses);
 
           resolve(statuses);
@@ -98,7 +103,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDealDetails(id)
         .then(dealDetail => {
-          console.log('response DealDetail', dealDetail);
+
           commit('SET_DEAL_DETAIL', dealDetail);
 
           resolve(dealDetail);
@@ -138,7 +143,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       createClaim(data)
         .then(response => {
-          console.log('response createClaim', response);
+
 
           resolve(response);
         })
