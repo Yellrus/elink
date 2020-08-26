@@ -3,15 +3,16 @@
     <loading-data v-if="loading" />
     <div v-if="!loading" class="pay page-action__box-card">
       <h1 class="page-action__title">Подтверждение оплаты</h1>
-
       <!--  Pay Info -->
       <div class="pay__info">
+        <div v-if="contract.Count > 0" class="pay__count">
+          Кол-во: {{ contract.Count }}
+        </div>
         <div class="pay__name">
           {{ contract.Name | uppercaseFirst }}
         </div>
-
         <div class="pay__desc">
-          {{ contract.Description }}
+          {{ contract.Description | uppercaseFirst }}
         </div>
         <div class="pay__amount">
           {{ contract.Amount | toThousandFilter }}
@@ -234,6 +235,7 @@ export default {
     padding: 25px 17px;
     border-radius: 20px;
     font-weight: 400;
+    text-align: center;
 
     &--error {
       color: #f56c6c;
@@ -248,9 +250,16 @@ export default {
   }
 
   &__amount {
-    font-size: 2em;
+    font-size: 32px;
     font-weight: 600;
     margin-bottom: 10px;
+  }
+
+  &__count {
+    font-size: 11px;
+    line-height: 1;
+    color: #5d6b85;
+    margin-bottom: 2px;
   }
 
   &__name {

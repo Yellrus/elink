@@ -26,6 +26,13 @@ export function getContract(id) {
   }).then(handleDataReceived);
 }
 
+export function closeContract(contractId) {
+  return request({
+    url: `api/contracts/${contractId}/close`,
+    method: 'get',
+  }).then(handleDataReceived);
+}
+
 export function getContractExtended(id) {
   return request({
     url: `api/Contracts/${id}/extended`,

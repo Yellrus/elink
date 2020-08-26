@@ -69,6 +69,24 @@
                         />
                       </el-tooltip>
                     </div>
+
+                    <div v-if="device !== 'mobile'" class="contract__status">
+                      <status
+                        v-if="contract.IsClosed"
+                        :status="'closed'"
+                        :name="'Закрыто'"
+                      />
+                      <status
+                        v-else-if="contract.Count <= 0"
+                        :status="'count'"
+                        :name="'Нет в наличии'"
+                      />
+                      <status
+                        v-else-if="checkDurationDate(contract.Duration)"
+                        :status="'duration'"
+                        :name="'Время истекло'"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -82,7 +100,11 @@
                     :count="contract.Count"
                     :hint="
                       `${
-                        contract.Count !== 0 ?  contract.CategoryId === 2 ? 'Количество товаров для продажи' : 'Количество услуг для продажи' : 'Нет в наличии'
+                        contract.Count !== 0
+                          ? contract.CategoryId === 2
+                            ? 'Количество товаров для продажи'
+                            : 'Количество услуг для продажи'
+                          : 'Нет в наличии'
                       }`
                     "
                   />
@@ -91,14 +113,36 @@
                 <div class="contract__Duration">
                   <span class="contract__DurationTitle">
                     <el-icon class="contract__DurationIcon el-icon-time" />
-                    Активно до
+                    {{
+                      checkDurationDate(contract.Duration)
+                        ? 'Истекло'
+                        : 'Активно до'
+                    }}
                   </span>
 
                   <div class="contract__DurationValue">
                     <span>{{ contract.Duration | formatDateDayMonth }}</span
                     >&nbsp;
-                    <span>{{ contract.Duration | formatDateOnlyYear }}</span>
+                    <span>{{ contract.Duration | formatDateYear }}</span>
                   </div>
+                </div>
+
+                <div v-if="device === 'mobile'" class="contract__status">
+                  <status
+                    v-if="contract.IsClosed"
+                    :status="'closed'"
+                    :name="'Закрыто'"
+                  />
+                  <status
+                    v-else-if="contract.Count <= 0"
+                    :status="'count'"
+                    :name="'Нет в наличии'"
+                  />
+                  <status
+                    v-else-if="checkDurationDate(contract.Duration)"
+                    :status="'duration'"
+                    :name="'Время истекло'"
+                  />
                 </div>
               </router-link>
 
@@ -126,13 +170,13 @@
 
                 <div class="contract__ActionsItem">
                   <el-popconfirm
-                    v-if="!checkDurationDate(contract.Duration)"
+                    v-if="!contract.IsClosed"
                     confirm-button-text="Подтвердить"
                     cancel-button-text="Отмена"
                     placement="top"
                     class="contract__btn-popconfirm"
-                    :title="`Удалить ${contract.Name} ?`"
-                    @onConfirm="deleteContract"
+                    :title="`Закрыть ${contract.Name} ?`"
+                    @onConfirm="closeContract(contract.Id)"
                   >
                     <el-button
                       slot="reference"
@@ -144,23 +188,16 @@
                     />
                   </el-popconfirm>
 
-                  <el-popover
-                    v-if="checkDurationDate(contract.Duration)"
-                    placement="top-start"
-                    title="Удаление"
-                    width="180"
-                    trigger="hover"
-                    :content="`Только при статусе -`"
-                  >
+                  <el-tooltip v-else placement="top">
+                    <div slot="content">Предложение закрыто</div>
                     <el-button
-                      slot="reference"
                       type="info"
-                      size="mini"
+                      size="small"
                       icon="el-icon-delete"
                       circle
                       plain
                     />
-                  </el-popover>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -196,11 +233,13 @@ import Pagination from '@/components/Pagination';
 import Badge from '@/components/Badge';
 import DataEmpty from '@/components/DataEmpty';
 import Arrow from '@/components/Arrow';
+import { Status } from './components';
 import dayjs from 'dayjs';
 
 export default {
   name: 'Contracts',
   components: {
+    Status,
     Arrow,
     DataEmpty,
     Badge,
@@ -218,6 +257,7 @@ export default {
     textDataEmpty:
       'У вас нет активных предложений. Чтобы создать новое предложение, нажмите на кнопку ниже',
     btnDataEmptyTitle: 'Создать предложение',
+    closingContract: false,
     loadingData: false,
     total: 0,
     listQuery: {
@@ -245,7 +285,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('contract', ['getContracts']),
+    ...mapActions('contract', ['getContracts', 'contractClose']),
 
     async fetchContracts() {
       this.loadingData = true;
@@ -275,12 +315,19 @@ export default {
       });
     },
 
-    deleteContract() {
-      this.$message({
-        message: 'Успешно помещён в архив!',
-        type: 'success',
-        duration: 1500,
-      });
+    closeContract(Id) {
+      this.closingContract = true;
+      this.contractClose(Id)
+        .then(() => {
+          this.$message({
+            message: 'Предложение успешно закрыто!',
+            type: 'success',
+            duration: 1500,
+          });
+          this.fetchContracts();
+        })
+        .catch(() => (this.closingContract = false))
+        .finally(() => (this.closingContract = false));
     },
 
     checkDurationDate(durationDate) {

@@ -6,6 +6,7 @@ import {
   createClaim,
   getByDisputeDeal,
   getDealsStatus,
+  dealCancel,
 } from '@/api/deals';
 
 const state = {
@@ -43,7 +44,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDeals(data)
         .then(deals => {
-
           commit('SET_DEALS', deals);
 
           resolve(deals);
@@ -63,10 +63,27 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDeal(data)
         .then(deal => {
-
           commit('SET_DEAL', deal);
 
           resolve(deal);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || error.Error || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  dealCancel({ commit }, id) {
+    return new Promise((resolve, reject) => {
+      dealCancel(id)
+        .then(resp => {
+          resolve(resp);
         })
         .catch(error => {
           Message({
@@ -83,7 +100,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDealsStatus(data)
         .then(statuses => {
-
           commit('SET_STATUSES', statuses);
 
           resolve(statuses);
@@ -103,7 +119,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getDealDetails(id)
         .then(dealDetail => {
-
           commit('SET_DEAL_DETAIL', dealDetail);
 
           resolve(dealDetail);
@@ -143,8 +158,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       createClaim(data)
         .then(response => {
-
-
           resolve(response);
         })
         .catch(error => {

@@ -35,6 +35,13 @@ export function getDeal(id) {
   }).then(handleDataReceived);
 }
 
+export function dealCancel(id) {
+  return request({
+    url: `api/deals/${id}/cancel`,
+    method: 'get',
+  }).then(handleDataReceived);
+}
+
 export function getDealDetails(id) {
   return request({
     url: `api/deals/${id}/deal-details`,

@@ -4,6 +4,7 @@ import {
   getContracts,
   getContract,
   getContractExtended,
+  closeContract,
 } from '@/api/contract';
 
 const state = {
@@ -40,6 +41,24 @@ const actions = {
           commit('SET_DEAL', 'true');
 
           resolve(response);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || error.Error || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  contractClose({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      closeContract(data)
+        .then(resp => {
+          resolve(resp);
         })
         .catch(error => {
           Message({

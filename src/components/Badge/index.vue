@@ -91,9 +91,13 @@ $empty-color: #f44336;
   &--empty {
     background-color: rgba($empty-color, 0.2);
 
+    background-color: #efebe9;
+
     .badge__label {
       color: $empty-color;
       text-shadow: 0 4px 8px rgba($empty-color, 0.2);
+      text-shadow: 0 4px 8px #d7ccc8;
+      color: #795548;
     }
   }
 }

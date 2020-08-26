@@ -5,7 +5,9 @@
       <loading-data v-if="submitting" />
       <h2 class="page-action__title">{{ title }}</h2>
       <div v-if="createDone" class="dispute-create__icon-wrap">
-        <el-icon class="dispute-create__icon dispute-create__icon--success el-icon-success" />
+        <el-icon
+          class="dispute-create__icon dispute-create__icon--success el-icon-success"
+        />
       </div>
       <div class="dispute-create">
         <div class="dispute-create__info">
@@ -21,8 +23,10 @@
           >
         </div>
       </div>
-      <template v-if="!createDone && +disputeDeal.IsDispute === 0">
+
+      <template v-if="!createDone">
         <el-form
+          v-if="+disputeDeal.IsDispute === 0"
           ref="claimCreate"
           :model="model"
           :rules="rules"
@@ -79,9 +83,13 @@
             >
           </div>
         </el-form>
+        <template v-else-if="+disputeDeal.IsDispute === 1">
+          Заявка на арбитраж по данной сделке уже была подана!
+        </template>
       </template>
-      <template v-if="!createDone && +disputeDeal.IsDispute === 1">
-        Заявка на арбитраж по данной сделке уже была подана!
+
+      <template v-if="checkClosingAtDate(disputeDeal.ClosingAt)">
+        Время для создания претензии истекло
       </template>
     </div>
   </div>
@@ -91,6 +99,7 @@
 import LoadingData from '@/components/LoadingData/index';
 import { validEmail } from '@/utils/validate';
 import { mapActions } from 'vuex';
+import dayjs from 'dayjs';
 export default {
   name: 'ClaimCreate',
   components: { LoadingData },
@@ -195,6 +204,13 @@ export default {
         })
         .finally(() => (this.loading = false));
     },
+
+    checkClosingAtDate(closingAtDate) {
+      const today = dayjs(new Date());
+      const pastDate = dayjs(closingAtDate);
+      // дата с сервера до сегодняшнего дня
+      return pastDate.isBefore(today);
+    },
   },
 };
 </script>
@@ -202,8 +218,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/styles/variables.scss';
 @import '~@/styles/page-action.scss';
-
-
 
 .dispute-create {
   &__info {

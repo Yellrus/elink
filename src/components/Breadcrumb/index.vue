@@ -43,7 +43,7 @@ export default {
       const first = matched[0];
 
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: 'Главная' } }].concat(
+        matched = [{ path: '/profile', meta: { title: 'Главная' } }].concat(
           matched
         );
       }
@@ -58,7 +58,7 @@ export default {
         return false;
       }
       return (
-        name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
+        name.trim().toLocaleLowerCase() === 'Profile'.toLocaleLowerCase()
       );
     },
     pathCompile(path) {

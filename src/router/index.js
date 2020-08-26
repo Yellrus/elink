@@ -11,15 +11,15 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'Dashboard',
-        meta: { title: 'Главная', icon: 's-home' },
-      },
-    ],
+    redirect: '/profile',
+    // children: [
+    //   {
+    //     path: 'dashboard',
+    //     component: () => import('@/views/dashboard/index'),
+    //     name: 'Dashboard',
+    //     meta: { title: 'Главная', icon: 's-home' },
+    //   },
+    // ],
   },
   {
     path: '/profile',

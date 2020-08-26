@@ -146,9 +146,8 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import Sticky from '@/components/Sticky';
-import Transaction from './components/Transaction';
+import { Transaction, Status } from './components';
 import LoadingData from '@/components/LoadingData';
-import Status from '@/components/Status';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import dayjs from 'dayjs';
@@ -258,8 +257,10 @@ export default {
   display: flex;
   align-items: flex-start;
   width: 100%;
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: calc(100vh - 290px);
 
   @media (max-width: $mq-tablet-horizontal) {
     flex-direction: column;

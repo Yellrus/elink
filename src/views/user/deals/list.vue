@@ -80,13 +80,13 @@
               <div class="contract__Duration">
                 <span class="contract__DurationTitle">
                   <el-icon class="contract__DurationIcon el-icon-time" />
-                  Активно до
+                  Дата закрытия
                 </span>
 
                 <div class="contract__DurationValue">
-                  <span>{{ item.Contract.Duration | formatDateDayMonth }}</span
+                  <span>{{ item.ClosingAt | formatDateDayMonth }}</span
                   >&nbsp;
-                  <span>{{ item.Contract.Duration | formatDateOnlyYear }}</span>
+                  <span>{{ item.ClosingAt | formatDateYear }}</span>
                 </div>
               </div>
 
@@ -100,45 +100,50 @@
 
             <div class="contract__Actions">
               <div class="contract__ActionsItem">
-                <el-popconfirm
-                  v-if="item.Status === 1"
-                  confirm-button-text="Подтвердить"
-                  cancel-button-text="Отмена"
-                  placement="top"
-                  class="contract__btn-popconfirm"
-                  :title="`Удалить ${item.Contract.Name} ?`"
-                  @onConfirm="deleteContract"
-                >
-                  <el-button
-                    slot="reference"
-                    type="danger"
-                    size="small"
-                    icon="el-icon-delete"
-                    circle
-                    plain
-                  />
-                </el-popconfirm>
+                <template v-if="!checkClosingAtDate(item.ClosingAt)">
+                  <el-popconfirm
+                    v-if="item.Status === 1"
+                    confirm-button-text="Подтвердить"
+                    cancel-button-text="Отмена"
+                    placement="top"
+                    class="contract__btn-popconfirm"
+                    :title="`Удалить ${item.Contract.Name} ?`"
+                    @onConfirm="cancelContract(item.Id)"
+                  >
+                    <el-button
+                      slot="reference"
+                      type="danger"
+                      size="small"
+                      icon="el-icon-delete"
+                      circle
+                      plain
+                    />
+                  </el-popconfirm>
+                  <el-tooltip v-else placement="top">
+                    <div slot="content">При текущем статусе не отменить</div>
+                    <el-button
+                      type="info"
+                      size="small"
+                      icon="el-icon-delete"
+                      circle
+                      plain
+                    />
+                  </el-tooltip>
 
-                <el-popover
-                  v-if="item.Status !== 1"
-                  placement="top-start"
-                  title="Удаление"
-                  width="180"
-                  trigger="hover"
-                  :content="
-                    `Только при статусе -
-                   ${dealsStatuses[1]}`
-                  "
-                >
-                  <el-button
-                    slot="reference"
-                    type="info"
-                    size="mini"
-                    icon="el-icon-delete"
-                    circle
-                    plain
-                  />
-                </el-popover>
+                </template>
+                <template v-else>
+                  <el-tooltip placement="top">
+                    <div slot="content">Время на отмену истекло</div>
+                    <el-button
+                      type="info"
+                      size="small"
+                      icon="el-icon-delete"
+                      circle
+                      plain
+                    />
+                  </el-tooltip>
+                </template>
+
               </div>
             </div>
           </div>
@@ -169,16 +174,15 @@ import Pagination from '@/components/Pagination';
 import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
-import Status from '@/components/Status';
+import { Status } from './components';
 import Arrow from '@/components/Arrow';
-//import Badge from '../../../components/Badge/index';
+import dayjs from 'dayjs';
 
 export default {
   name: 'Deals',
   components: {
     Arrow,
     Status,
-    //Badge,
     LoadingData,
     DataEmpty,
     Pagination,
@@ -188,6 +192,7 @@ export default {
   data: () => ({
     textDataEmpty: 'У вас ещё нет продаж',
     loadingData: false,
+    cancelingDeal: false,
     total: 0,
     listQuery: {
       offset: 1,
@@ -217,10 +222,11 @@ export default {
 
   created() {
     this.fetchDeals();
+    this.getDealsStatus();
   },
 
   methods: {
-    ...mapActions('deal', ['getDeals']),
+    ...mapActions('deal', ['getDeals', 'dealCancel', 'getDealsStatus']),
 
     async fetchDeals() {
       this.loadingData = true;
@@ -242,12 +248,26 @@ export default {
       }, 300);
     },
 
-    deleteContract() {
-      this.$message({
-        message: 'Успешно помещён в архив!',
-        type: 'success',
-        duration: 1500,
-      });
+    cancelContract(Id) {
+      this.cancelingDeal = true;
+      this.dealCancel(Id)
+        .then(() => {
+          this.$message({
+            message: 'Успешно отменён!',
+            type: 'success',
+            duration: 1500,
+          });
+          this.fetchDeals();
+        })
+        .catch(() => (this.cancelingDeal = false))
+        .finally(() => (this.cancelingDeal = false));
+    },
+
+    checkClosingAtDate(closingAtDate) {
+      const today = dayjs(new Date());
+      const pastDate = dayjs(closingAtDate);
+      // дата с сервера до сегодняшнего дня
+      return pastDate.isBefore(today);
     },
   },
 };
