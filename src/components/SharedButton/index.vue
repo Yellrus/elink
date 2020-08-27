@@ -5,6 +5,7 @@
       icon="el-icon-share"
       circle
       plain
+      :disabled="isDisabled"
       size="small"
       type="primary"
     />
@@ -33,6 +34,10 @@ export default {
     sharing: {
       type: Object,
       default: () => ({}),
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data: () => ({

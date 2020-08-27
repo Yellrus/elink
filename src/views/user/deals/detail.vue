@@ -89,16 +89,49 @@
 
             <div v-if="dealDetail.DisputeReason" class="detail__dispute">
               <span class="detail__dispute-title">Претензия</span>
-              <p class="detail__dispute-text" v-text="dealDetail.DisputeReason"></p>
+              <p
+                class="detail__dispute-text"
+                v-text="dealDetail.DisputeReason"
+              ></p>
               <el-icon class="el-icon-chat-dot-square detail__dispute-icon" />
             </div>
+
+            <template v-if="!checkClosingAtDate(dealDetail.ClosingAt)">
+              <template v-if="dealDetail.Status === 1">
+                <div class="detail__actions">
+                  <div class="detail__close-text">
+                    Если по каким-то условиям вы не можете выполнить сделку -
+                    нажмите "Отменить", деньги будут возвращены покупателю.
+                  </div>
+                  <el-popconfirm
+                    confirm-button-text="Подтвердить"
+                    cancel-button-text="Отмена"
+                    placement="top"
+                    class="detail__btn-popconfirm"
+                    :title="`Отменить ${dealDetail.Contract.Name} ?`"
+                    @onConfirm="cancelContract(dealDetail.Id)"
+                  >
+                    <el-button
+                      slot="reference"
+                      class="detail__close-btn"
+                      type="danger"
+                      size="small"
+                      plain
+                    >
+                      <closeIcon class="detail__btn-icon" />
+                      Отменить
+                    </el-button>
+                  </el-popconfirm>
+                </div>
+              </template>
+            </template>
 
             <div class="detail__closing">
               <el-icon class="el-icon-info" />
               <span class="detail__closing-title"
                 >Поступление средств
                 {{
-                  checkDurationDate(dealDetail.ClosingAt)
+                  checkClosingAtDate(dealDetail.ClosingAt)
                     ? 'выполнено'
                     : 'произойдет'
                 }}
@@ -109,7 +142,6 @@
                 <span>{{ dealDetail.ClosingAt | formatDateOnlyYear }}</span>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -149,6 +181,7 @@ import Sticky from '@/components/Sticky';
 import { Transaction, Status } from './components';
 import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
+import CloseIcon from '../../../../public/close.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import dayjs from 'dayjs';
 
@@ -157,6 +190,7 @@ export default {
   components: {
     Status,
     LoadingData,
+    CloseIcon,
     Sticky,
     Transaction,
     CreditCardLogo,
@@ -187,7 +221,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('deal', ['getDealDetail']),
+    ...mapActions('deal', ['getDealDetail', 'dealCancel']),
 
     fetchDeal() {
       this.loading = true;
@@ -200,9 +234,24 @@ export default {
         });
     },
 
-    checkDurationDate(durationDate) {
+    cancelContract(Id) {
+      this.cancelingDeal = true;
+      this.dealCancel(Id)
+        .then(() => {
+          this.$message({
+            message: 'Успешно отменён!',
+            type: 'success',
+            duration: 1500,
+          });
+          this.fetchDeals();
+        })
+        .catch(() => (this.cancelingDeal = false))
+        .finally(() => (this.cancelingDeal = false));
+    },
+
+    checkClosingAtDate(closingDate) {
       const today = dayjs(new Date());
-      const pastDate = dayjs(durationDate);
+      const pastDate = dayjs(closingDate);
       // дата с сервера до сегодняшнего дня
       return pastDate.isBefore(today);
     },
@@ -251,6 +300,33 @@ export default {
     padding: 10px 20px;
     color: #000;
     border-bottom: 1px solid #f5f4f8;
+  }
+}
+
+.detail {
+  &__close-text {
+    max-width: 80%;
+    font-size: 12px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    color: #5d6b85;
+  }
+
+  &__close-btn {
+    margin-top: 7px;
+  }
+
+  &__btn-icon {
+    margin-right: 4px;
+    margin-bottom: 2px;
+  }
+
+  &__actions {
+    padding: 10px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 10px;
   }
 }
 </style>

@@ -13,6 +13,14 @@ export function formatDateOnlyYear(date) {
   return dayjs(date).format('YYYY');
 }
 
+export function formatDateOnlyTime(date) {
+  if (!date) {
+    return null;
+  }
+
+  return dayjs(date).format('HH:mm');
+}
+
 /**
  * @param {String} date
  */

@@ -133,7 +133,7 @@
               </div>
             </div>
 
-            <div class="detail__actions">
+            <div v-if="!contractDetail.IsClosed" class="detail__actions">
               <el-button
                 v-clipboard:copy="`${host}/contract/${contractDetail.Id}`"
                 v-clipboard:success="clipboardSuccess"
@@ -150,7 +150,7 @@
                 confirm-button-text="Подтвердить"
                 cancel-button-text="Отмена"
                 placement="top"
-                class="contract__btn-popconfirm"
+                class="detail__btn-popconfirm"
                 :title="`Закрыть ${contractDetail.Name} ?`"
                 @onConfirm="closeContract(contractDetail.Id)"
               >
@@ -158,10 +158,11 @@
                   slot="reference"
                   size="small"
                   type="danger"
-                  icon="el-icon-delete"
                   circle
                   plain
-                />
+                >
+                  <closeIcon class="detail__btn-icon" />
+                </el-button>
               </el-popconfirm>
 
               <el-tooltip v-else placement="top">
@@ -169,14 +170,15 @@
                 <el-button
                   type="info"
                   size="small"
-                  icon="el-icon-delete"
                   circle
                   plain
-                />
+                >
+                  <closeIcon class="detail__btn-icon" />
+                </el-button>
               </el-tooltip>
             </div>
 
-            <div class="detail__social-sharing">
+            <div v-if="!contractDetail.IsClosed" class="detail__social-sharing">
               <div class="detail__social-sharing-title">
                 Поделиться ссылкой на предложение
               </div>
@@ -204,6 +206,7 @@ import { mapActions } from 'vuex';
 import clipboard from '@/directive/clipboard';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
+import CloseIcon from '../../../../public/close.svg';
 import LoadingData from '@/components/LoadingData/index';
 import Sticky from '@/components/Sticky';
 import Badge from '@/components/Badge';
@@ -218,6 +221,7 @@ export default {
     SocialSharing,
     Sticky,
     LoadingData,
+    CloseIcon,
     CreditCardLogo,
     WebmoneyLogo,
     Status,
@@ -315,7 +319,7 @@ export default {
             type: 'success',
             duration: 1500,
           });
-          this.fetchContracts();
+          this.fetchContract();
         })
         .catch(() => (this.closingContract = false))
         .finally(() => (this.closingContract = false));

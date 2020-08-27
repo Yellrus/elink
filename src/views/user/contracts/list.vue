@@ -153,6 +153,7 @@
                     v-clipboard:success="clipboardSuccess"
                     type="success"
                     icon="el-icon-link"
+                    :disabled="contract.IsClosed"
                     circle
                     plain
                     class="contract__BtnCopy"
@@ -160,6 +161,7 @@
                 </div>
                 <div class="contract__ActionsItem">
                   <shared-button
+                    :is-disabled="contract.IsClosed"
                     :sharing="{
                       url: `${host}/contract/${contract.Id}`,
                       title: contract.Name,
@@ -182,10 +184,11 @@
                       slot="reference"
                       size="small"
                       type="danger"
-                      icon="el-icon-delete"
                       circle
                       plain
-                    />
+                    >
+                      <closeIcon class="contract__btn-icon" />
+                    </el-button>
                   </el-popconfirm>
 
                   <el-tooltip v-else placement="top">
@@ -193,10 +196,11 @@
                     <el-button
                       type="info"
                       size="small"
-                      icon="el-icon-delete"
                       circle
                       plain
-                    />
+                    >
+                      <closeIcon class="contract__btn-icon"/>
+                    </el-button>
                   </el-tooltip>
                 </div>
               </div>
@@ -229,6 +233,7 @@ import LoadingData from '@/components/LoadingData';
 import SharedButton from '@/components/SharedButton';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CreditCardLogo from '../../../../public/creditCard.svg';
+import CloseIcon from '../../../../public/close.svg';
 import Pagination from '@/components/Pagination';
 import Badge from '@/components/Badge';
 import DataEmpty from '@/components/DataEmpty';
@@ -247,6 +252,7 @@ export default {
     LoadingData,
     CreditCardLogo,
     WebmoneyLogo,
+    CloseIcon,
     Pagination,
   },
   directives: {

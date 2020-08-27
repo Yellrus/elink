@@ -107,43 +107,34 @@
                     cancel-button-text="Отмена"
                     placement="top"
                     class="contract__btn-popconfirm"
-                    :title="`Удалить ${item.Contract.Name} ?`"
+                    :title="`Отменить ${item.Contract.Name} ?`"
                     @onConfirm="cancelContract(item.Id)"
                   >
                     <el-button
                       slot="reference"
                       type="danger"
                       size="small"
-                      icon="el-icon-delete"
                       circle
                       plain
-                    />
+                    >
+                      <closeIcon />
+                    </el-button>
                   </el-popconfirm>
                   <el-tooltip v-else placement="top">
                     <div slot="content">При текущем статусе не отменить</div>
-                    <el-button
-                      type="info"
-                      size="small"
-                      icon="el-icon-delete"
-                      circle
-                      plain
-                    />
+                    <el-button type="info" size="small" circle plain>
+                      <closeIcon class="contract__btn-icon" />
+                    </el-button>
                   </el-tooltip>
-
                 </template>
                 <template v-else>
                   <el-tooltip placement="top">
                     <div slot="content">Время на отмену истекло</div>
-                    <el-button
-                      type="info"
-                      size="small"
-                      icon="el-icon-delete"
-                      circle
-                      plain
-                    />
+                    <el-button type="info" size="small" circle plain>
+                      <closeIcon class="contract__btn-icon" />
+                    </el-button>
                   </el-tooltip>
                 </template>
-
               </div>
             </div>
           </div>
@@ -174,6 +165,7 @@ import Pagination from '@/components/Pagination';
 import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
+import CloseIcon from '../../../../public/close.svg';
 import { Status } from './components';
 import Arrow from '@/components/Arrow';
 import dayjs from 'dayjs';
@@ -186,6 +178,7 @@ export default {
     LoadingData,
     DataEmpty,
     Pagination,
+    CloseIcon,
     CreditCardLogo,
     WebmoneyLogo,
   },

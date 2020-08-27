@@ -5,6 +5,7 @@
       v-if="!loading && dealId"
       class="page-action__box-card page-action__box-card--success pay"
     >
+      <loading-data v-if="submittingEmail" />
       <div class="pay__icon-wrap">
         <el-icon class="pay__icon pay__icon--success el-icon-success" />
       </div>
@@ -28,9 +29,9 @@
         При возникновении спорной ситуации до <br /><span
           class="pay__claim-date"
           >{{ deal.ClosingAt | formatDateDayMonth }}
-          {{ deal.ClosingAt | formatDateOnlyYear }}</span
-        >
-        по данной покупке Вы можете отправить претензию по ссылке:
+          {{ deal.ClosingAt | formatDateOnlyYear }}
+          {{ deal.ClosingAt | formatDateOnlyTime }}</span>
+        по данной покупке можно отправить претензию по ссылке:
       </p>
 
       <div class="pay__claim-link">
@@ -181,6 +182,7 @@ export default {
               type: 'error',
               duration: 3 * 1000,
             });
+            this.submittingEmail = false;
           })
           .finally(() => (this.submittingEmail = false));
       });

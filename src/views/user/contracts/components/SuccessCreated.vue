@@ -2,12 +2,12 @@
   <div class="created-deal">
     <div class="created-deal__content">
       <div class="created-deal__header">
-        <h2 class="created-deal__heading">Предложение сделки создано!</h2>
+        <h2 class="created-deal__heading">Предложение создано!</h2>
         <div class="created-deal__img">
           <el-icon class="created-deal__icon el-icon-success"></el-icon>
         </div>
         <p class="created-deal__desc">
-          Публичное предложение
+          Предложение <br />
           <router-link :to="`/contracts/${deal.Id}`">
             <el-link
               class="created-deal__deal-name"
@@ -16,10 +16,9 @@
               >{{ deal.Name }}</el-link
             >
           </router-link>
-          успешно создано
         </p>
         <p class="created-deal__desc">
-          и будет активно до
+          будет активно до
           <span class="created-deal__deal-name">{{ deal.Duration | humansDateFormat }}</span>
         </p>
       </div>
@@ -149,6 +148,7 @@ export default {
   &__heading {
     font-size: 24px;
     margin-bottom: 25px;
+    font-weight: 500;
   }
 
   &__created-link {
@@ -196,7 +196,12 @@ export default {
 
   &__desc {
     margin: 0;
-    max-width: 85%;
+    font-size: 18px;
+    padding: 0 10px;
+
+    a {
+      font-size: 24px;
+    }
 
     @media (max-width: $mq-mobile) {
       max-width: 100%;
