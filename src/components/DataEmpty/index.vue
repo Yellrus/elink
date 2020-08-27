@@ -120,16 +120,18 @@ $base-color: #0071f6;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    padding-bottom: 55px;
+    color: #5d6b85;
   }
 
   &__icon-wrap {
     border-radius: 50%;
     margin-top: 45px;
-    width: 138px;
+    width: 85px;
     background-color: #fff;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     animation: introduceBadge 1s linear 0s 1 both;
-    height: 136px;
+    height: 85px;
     perspective: 600px;
     position: relative;
     margin-bottom: 50px;

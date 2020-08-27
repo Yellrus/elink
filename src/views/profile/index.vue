@@ -3,7 +3,8 @@
     <loading-data v-if="loading" />
     <div class="page-user-info">
       <div class="page-user-info__user">
-        <user-short-info v-if="isLoadedProfile" />
+        <loading-data v-if="!isLoadedProfile" />
+        <user-short-info v-else />
       </div>
 
       <div class="page-user-info__content">
@@ -119,6 +120,7 @@ export default {
   }
 
   &__user {
+    position: relative;
     width: 100%;
     max-width: 350px;
     margin-right: 20px;

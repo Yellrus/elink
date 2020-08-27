@@ -167,12 +167,7 @@
 
               <el-tooltip v-else placement="top">
                 <div slot="content">Предложение закрыто</div>
-                <el-button
-                  type="info"
-                  size="small"
-                  circle
-                  plain
-                >
+                <el-button type="info" size="small" circle plain>
                   <closeIcon class="detail__btn-icon" />
                 </el-button>
               </el-tooltip>
@@ -194,6 +189,8 @@
         >
           <div class="detail-layout__sidebar">
             <h2 class="widget__title">Продажи</h2>
+
+            <deals-for-contract />
           </div>
         </sticky>
       </template>
@@ -214,10 +211,12 @@ import { Status } from './components';
 import dayjs from 'dayjs';
 import SocialSharing from '@/components/SocialSharing';
 import { getCommission } from '@/api/contract';
+import DealsForContract from './components/DealsForContract';
 
 export default {
   name: 'ContractDetail',
   components: {
+    DealsForContract,
     SocialSharing,
     Sticky,
     LoadingData,
@@ -491,6 +490,13 @@ export default {
 
   @media (max-width: $mq-mobile) {
     order: 3;
+  }
+}
+
+.detail-layout {
+  &__widget {
+    width: 100%;
+    max-width: 540px;
   }
 }
 </style>
