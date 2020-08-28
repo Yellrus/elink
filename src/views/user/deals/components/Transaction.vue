@@ -32,7 +32,7 @@
           <el-icon v-if="fromPayer" class="el-icon-bottom-left" />
         </div>
         <span class="transaction__status-title"
-          >{{ fromPayer ? 'Входящая ' : 'Исходящая ' }}транзакция</span
+          >{{ fromPayer ? 'Входящая ' : 'Исходящая ' }} оплата</span
         >
       </div>
     </div>

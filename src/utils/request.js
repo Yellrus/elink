@@ -13,7 +13,7 @@ export const BASE_URL =
 const service = axios.create({
   baseURL: BASE_URL, // url = base url + request url
   //withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000, // request timeout
+  timeout: 6000, // request timeout
 });
 
 // request interceptor
@@ -86,12 +86,12 @@ service.interceptors.response.use(
         'Подтверждение выхода',
         {
           confirmButtonText: 'Перезайти',
-          cancelButtonText: 'Отмена',
+          // cancelButtonText: 'Отмена',
           type: 'warning',
         }
       ).then(() => {
         store.dispatch('user/resetToken').then(() => {
-          location.reload();
+          location.href = `${BASE_URL}/login`;
         });
       });
 

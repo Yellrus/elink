@@ -23,18 +23,32 @@
       />
       <el-form-item
         label="Номер карты"
+        :class="{
+          'input-brand-color': getCreditCardStyle && getCreditCardStyle.color,
+        }"
         prop="Purse"
         class="credit-card__form-item"
       >
         <el-input
+          ref="cardNumberInput"
           v-model="model.Purse"
           v-mask="'#### #### #### ####'"
-          masked="true"
           :autofocus="true"
-          :debounce="200"
           class="credit-card__form-input"
-        ></el-input>
+        />
       </el-form-item>
+
+      <div v-if="!getBrandLogo" class="credit-card__logo-items">
+        <div class="credit-card__logo-item">
+          <MasterCardLogo />
+        </div>
+        <div class="credit-card__logo-item">
+          <VisaLogo />
+        </div>
+        <div class="credit-card__logo-item">
+          <MirLogo />
+        </div>
+      </div>
     </div>
 
     <el-form-item class="form-add-card__actions">
@@ -53,15 +67,21 @@
 import { mask } from 'vue-the-mask';
 import cardValid from 'card-validator';
 import { fetchCardInfo } from '@/api/paymethod';
+import MasterCardLogo from '../../../public/masterCard.svg';
+import MirLogo from '../../../public/mir.svg';
+import VisaLogo from '../../../public/visa.svg';
 import { mapActions } from 'vuex';
 
 export default {
   name: 'FormAddCard',
   directives: { mask },
+  components: { MasterCardLogo, MirLogo, VisaLogo },
   data() {
     const validateCardNumber = (rule, value, callback) => {
       if (!value) {
         callback(new Error('Введите номер карты'));
+      } else if (value && value.length <= 7) {
+        callback(new Error(' '));
       } else {
         let numberValidation = cardValid.number(value.trim());
         if (!numberValidation.isValid) {
@@ -109,14 +129,20 @@ export default {
       }
       return this.getCreditCardInfo && this.getCreditCardInfo.brandLogoLightSvg;
     },
+
+    curNumber() {
+      return this.model.Purse;
+    },
   },
 
   watch: {
-    'model.paymethod'(newValue) {
-      if (newValue && newValue.length < 6) {
+    curNumber(newValue) {
+      let str = newValue.split(' ').join('');
+      if (str && str.length < 6) {
         return;
       }
-      //this.fetchDataCardInfo(newValue);
+
+      this.fetchDataCardInfo(str);
     },
   },
 
@@ -144,6 +170,12 @@ export default {
             brandLogoOriginalSvg,
             bankName,
           };
+
+
+          this.$nextTick(() => {
+            this.$refs.cardNumberInput.focus();
+          });
+          //console.log('this.$refs.cardNumberInput', this.$refs.cardNumberInput)
         })
         .catch(err => {
           console.log(err);
@@ -182,17 +214,16 @@ export default {
 <style lang="scss">
 .form-add-card {
   position: relative;
-
   &__actions {
     margin-top: 20px;
   }
 }
 .credit-card {
   width: 100%;
-  background: rgba(230, 230, 230, 0.77);
+  background: #eef2f7;
   padding: 74px 15px 52px;
   border-radius: 8px;
-  height: 219px;
+  height: 220px;
   position: relative;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -233,6 +264,29 @@ export default {
       width: 50px;
     }
   }
+
+  &__logo-items {
+    display: flex;
+    align-items: center;
+    opacity: 0.2;
+
+    position: absolute;
+    bottom: 23px;
+    right: 28px;
+  }
+
+  &__logo-item {
+    width: 52px;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    &:not(:last-child) {
+      margin-right: 7px;
+    }
+  }
+
   &__form-item {
     margin-bottom: 0;
     label {
@@ -247,6 +301,14 @@ export default {
       font-size: 20px;
       font-weight: 500;
     }
+  }
+}
+.el-form-item.is-error.input-brand-color .el-input__inner {
+  border-color: #fff;
+}
+.el-form-item.is-error.input-brand-color {
+  .el-form-item__error {
+    color: #fff !important;
   }
 }
 </style>

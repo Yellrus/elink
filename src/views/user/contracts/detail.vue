@@ -182,9 +182,7 @@
           </div>
         </div>
 
-        <sticky
-          :z-index="10"
-          :sticky-top="137"
+        <div
           class="detail-layout__widget widget"
         >
           <div class="detail-layout__sidebar">
@@ -192,7 +190,7 @@
 
             <deals-for-contract />
           </div>
-        </sticky>
+        </div>
       </template>
     </div>
   </div>
@@ -205,7 +203,6 @@ import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CloseIcon from '../../../../public/close.svg';
 import LoadingData from '@/components/LoadingData/index';
-import Sticky from '@/components/Sticky';
 import Badge from '@/components/Badge';
 import { Status } from './components';
 import dayjs from 'dayjs';
@@ -218,7 +215,6 @@ export default {
   components: {
     DealsForContract,
     SocialSharing,
-    Sticky,
     LoadingData,
     CloseIcon,
     CreditCardLogo,

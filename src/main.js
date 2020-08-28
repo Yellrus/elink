@@ -23,10 +23,10 @@ Vue.config.productionTip = false;
 async function initState(app) {
   return new Promise(function(resolve) {
     let token = getToken();
+
     if (token) {
       app.$store.dispatch('profile/getInfo');
       app.$store.dispatch('dictionary/getDictionary');
-      app.$store.dispatch('deal/getDealsStatus');
     }
     resolve();
   });

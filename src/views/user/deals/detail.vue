@@ -128,28 +128,33 @@
 
             <div class="detail__closing">
               <el-icon class="el-icon-info" />
-              <span class="detail__closing-title"
-                >Поступление средств
-                {{
-                  checkClosingAtDate(dealDetail.ClosingAt)
-                    ? 'выполнено'
-                    : 'произойдет'
-                }}
-              </span>
-              <div class="detail__closing-date">
-                <span>{{ dealDetail.ClosingAt | relativeDateFromNow }}</span>
-                <span>{{ dealDetail.ClosingAt | formatDateDayMonth }}</span>
-                <span>{{ dealDetail.ClosingAt | formatDateOnlyYear }}</span>
-              </div>
+              <template v-if="dealDetail.Status !== 5">
+                <span class="detail__closing-title"
+                  >Поступление средств
+                  {{
+                    checkClosingAtDate(dealDetail.ClosingAt)
+                      ? 'выполнено'
+                      : 'произойдет'
+                  }}
+                </span>
+                <div class="detail__closing-date">
+                  <span>{{ dealDetail.ClosingAt | relativeDateFromNow }}</span>
+                  <span>{{ dealDetail.ClosingAt | formatDateDayMonth }}</span>
+                  <span>{{ dealDetail.ClosingAt | formatDateOnlyYear }}</span>
+                </div>
+              </template>
+
+              <template v-else>
+                <span class="detail__closing-title">
+                  Сделка по продаже находится в арбитраже.<br />
+                  Выплата произойдет если арбитраж будет решен в вашу пользу.
+                </span>
+              </template>
             </div>
           </div>
         </div>
 
-        <sticky
-          :z-index="10"
-          :sticky-top="137"
-          class="detail-layout__widget widget"
-        >
+        <div class="detail-layout__widget widget">
           <div class="detail-layout__sidebar">
             <h2 class="widget__title">Транзакция</h2>
             <div class="transactions">
@@ -169,7 +174,7 @@
               </div>
             </div>
           </div>
-        </sticky>
+        </div>
       </template>
     </div>
   </div>
@@ -177,7 +182,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import Sticky from '@/components/Sticky';
 import { Transaction, Status } from './components';
 import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
@@ -191,7 +195,6 @@ export default {
     Status,
     LoadingData,
     CloseIcon,
-    Sticky,
     Transaction,
     CreditCardLogo,
     WebmoneyLogo,
@@ -218,6 +221,7 @@ export default {
     this.id = this.$route.params.id;
 
     this.fetchDeal();
+    this.$store.dispatch('deal/getDealsStatus');
   },
 
   methods: {

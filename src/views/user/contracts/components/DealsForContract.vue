@@ -160,6 +160,7 @@ export default {
     this.$set(this.listQuery, 'contractId', this.id);
 
     this.fetchDealsForContract();
+    this.getDealsStatus();
   },
 
   methods: {
