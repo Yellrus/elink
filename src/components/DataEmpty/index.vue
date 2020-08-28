@@ -122,6 +122,7 @@ $base-color: #0071f6;
     flex-direction: column;
     padding-bottom: 55px;
     color: #5d6b85;
+    text-align: center;
   }
 
   &__icon-wrap {
@@ -136,8 +137,8 @@ $base-color: #0071f6;
     position: relative;
     margin-bottom: 50px;
 
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       animation: pulseBadge 3s cubic-bezier(0.86, 0, 0.07, 1) 0s infinite both;
       border: 2px dashed $base-color;
       border-radius: inherit;
@@ -150,7 +151,7 @@ $base-color: #0071f6;
       top: -16px;
     }
 
-    &:after {
+    &::after {
       animation-name: pulseBadge2;
       bottom: -32px;
       left: -32px;

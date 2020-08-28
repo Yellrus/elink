@@ -50,10 +50,11 @@ export default {
     color: #67c23a;
   }
 
-  &--s3 {
-    background-color: #fdf6ec;
+  &--s3,
+  &--s5 {
     border-color: #faecd8;
-    color: #e6a23c;
+    background-color: #fff3e0;
+    color: #c07426;
   }
 
   &--s4 {
@@ -62,11 +63,11 @@ export default {
     color: #5c6bc0;
   }
 
-  &--s5 {
-    background-color: #ede7f6;
-    border-color: #d1c4e9;
-    color: #7e57c2;
-  }
+  /*&--s5 {*/
+  /*  background-color: #ede7f6;*/
+  /*  border-color: #d1c4e9;*/
+  /*  color: #7e57c2;*/
+  /*}*/
 
   &--s6,
   &--s7 {

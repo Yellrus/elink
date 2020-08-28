@@ -14,7 +14,6 @@
               {{ textDataEmpty }}
             </template>
           </data-empty>
-
           <div
             v-for="contract in items"
             :key="contract.Id"
@@ -193,13 +192,8 @@
 
                   <el-tooltip v-else placement="top">
                     <div slot="content">Предложение закрыто</div>
-                    <el-button
-                      type="info"
-                      size="small"
-                      circle
-                      plain
-                    >
-                      <closeIcon class="contract__btn-icon"/>
+                    <el-button type="info" size="small" circle plain>
+                      <closeIcon class="contract__btn-icon" />
                     </el-button>
                   </el-tooltip>
                 </div>

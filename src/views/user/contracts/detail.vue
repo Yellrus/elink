@@ -202,7 +202,7 @@ import clipboard from '@/directive/clipboard';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CloseIcon from '../../../../public/close.svg';
-import LoadingData from '@/components/LoadingData/index';
+import LoadingData from '@/components/LoadingData';
 import Badge from '@/components/Badge';
 import { Status } from './components';
 import dayjs from 'dayjs';
