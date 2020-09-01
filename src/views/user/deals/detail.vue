@@ -156,7 +156,7 @@
 
         <div class="detail-layout__widget widget">
           <div class="detail-layout__sidebar">
-            <h2 class="widget__title">Транзакция</h2>
+            <h2 class="widget__title">Оплата</h2>
             <div class="transactions">
               <div class="transactions__items">
                 <div v-if="dealDetail.FromPayer" class="transactions__item">
@@ -187,7 +187,7 @@ import LoadingData from '@/components/LoadingData';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import CloseIcon from '../../../../public/close.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
-import dayjs from 'dayjs';
+import { checkDate } from '@/mixins/common';
 
 export default {
   name: 'ContractDetail',
@@ -199,12 +199,12 @@ export default {
     CreditCardLogo,
     WebmoneyLogo,
   },
+  mixins: [checkDate],
   data: () => ({
     id: null,
     loading: false,
     dealDetail: null,
   }),
-
   computed: {
     ...mapState({
       dealsStatuses: state => state.deal.statuses,
@@ -254,10 +254,7 @@ export default {
     },
 
     checkClosingAtDate(closingDate) {
-      const today = dayjs(new Date());
-      const pastDate = dayjs(closingDate);
-      // дата с сервера до сегодняшнего дня
-      return pastDate.isBefore(today);
+      return this.checkDate(closingDate);
     },
   },
 };

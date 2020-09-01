@@ -2,6 +2,7 @@ import Vue from 'vue';
 import {
   Button,
   Link,
+  Badge,
   Input,
   Select,
   Option,
@@ -48,6 +49,7 @@ locale.use(lang);
 
 Vue.use(Button);
 Vue.use(Link);
+Vue.use(Badge);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Input);

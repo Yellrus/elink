@@ -11,11 +11,27 @@ export function getCommission(data) {
 }
 
 export function getContracts(data) {
-  const { offset, limit } = data;
+  const {
+    offset,
+    limit,
+    contractName,
+    createdAt,
+    activeFor,
+    payMethod,
+    categories,
+  } = data;
   return request({
     url: 'api/Contracts',
     method: 'get',
-    params: { offset, limit },
+    params: {
+      offset,
+      limit,
+      contractName,
+      createdAt,
+      activeFor,
+      payMethod,
+      categories,
+    },
   }).then(handleDataReceived);
 }
 

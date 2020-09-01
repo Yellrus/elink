@@ -6,7 +6,8 @@
         class="payment-card__icon payment-card__icon--creditCard"
       />
 
-      <span class="payment-card__number" v-text="paymethod.Purse"></span>
+      <span v-if="paymethod.Purse" class="payment-card__number" v-text="paymethod.Purse"></span>
+      <span v-else class="payment-card__number">Банковская карта</span>
     </div>
 
     <el-popconfirm

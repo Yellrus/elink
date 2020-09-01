@@ -34,6 +34,12 @@
   top: 2px;
 }
 
+.el-select--medium {
+  .el-input__prefix {
+    top: 9px;
+  }
+}
+
 .el-input--prefix .el-input__inner {
   padding-left: 35px;
 }
@@ -67,4 +73,22 @@
     }
   }
 }
+
+.el-date-editor.el-input {
+  width: 100%;
+  max-width: 220px;
+}
+
+.el-select__tags-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 132px;
+}
+
+.el-select .el-tag {
+  display: flex;
+  align-items: center;
+}
+
 

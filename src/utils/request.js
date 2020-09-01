@@ -49,6 +49,7 @@ service.interceptors.response.use(
    */
   response => {
     if (response.status !== 200) {
+      console.log('response.status', response.status);
       Message({
         message: response.message || 'Error',
         type: 'error',
@@ -81,13 +82,15 @@ service.interceptors.response.use(
   error => {
     if (error.response.status === 401) {
       // to re-login
-      MessageBox.confirm(
-        'Вы вышли из системы, вы можете отменить, чтобы остаться на этой странице, или войти снова',
-        'Подтверждение выхода',
+      MessageBox.alert(
+        'Вы долго не совершали активных действий на сайте. Чтобы продолжить работу, нажмите "Авторизоваться"',
+        'Сеанс прерван',
         {
-          confirmButtonText: 'Перезайти',
-          // cancelButtonText: 'Отмена',
+          customClass: 'auth-session-dialog',
+          confirmButtonText: 'Авторизоваться',
+          cancelButtonClass: 'auth-cancel-button',
           type: 'warning',
+          center: true,
         }
       ).then(() => {
         store.dispatch('user/resetToken').then(() => {

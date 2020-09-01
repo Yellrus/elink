@@ -10,9 +10,11 @@ import VueSocialSharing from 'vue-social-sharing';
 
 Vue.use(VueSocialSharing);
 
+import { hello } from '@/mixins/common';
 import './permission';
 import { getToken } from '@/utils/auth'; // permission control
 import * as filters from './filters'; // global filters
+
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key]);
@@ -33,6 +35,7 @@ async function initState(app) {
 }
 
 new Vue({
+  mixins: [hello],
   router,
   store,
   async created() {

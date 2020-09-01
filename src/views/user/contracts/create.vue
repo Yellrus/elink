@@ -371,32 +371,6 @@ export default {
 
           return time.getTime() < Date.now() || time.getTime() > oneYearFromNow;
         },
-        // shortcuts: [
-        //   {
-        //     text: 'До завтра',
-        //     onClick(picker) {
-        //       const date = new Date();
-        //       date.setTime(date.getTime() + 3600 * 1000 * 24);
-        //       picker.$emit('pick', date);
-        //     },
-        //   },
-        //   {
-        //     text: 'На неделю',
-        //     onClick(picker) {
-        //       const date = new Date();
-        //       date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
-        //       picker.$emit('pick', date);
-        //     },
-        //   },
-        //   {
-        //     text: 'На месяц',
-        //     onClick(picker) {
-        //       const date = new Date();
-        //       date.setTime(date.getTime() + 30 * 24 * 60 * 60 * 1000);
-        //       picker.$emit('pick', date);
-        //     },
-        //   },
-        // ],
       },
       lastAddedPaymethod: null,
       submitting: false,

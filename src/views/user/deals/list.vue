@@ -1,143 +1,187 @@
 <template>
   <div class="page-container">
-    <h1 class="page-contracts-heading">Список моих продаж</h1>
+    <!-- Header -->
+    <div class="page-container__header">
+      <h1 class="page-contracts-heading">Мои сделки по продаже</h1>
+      <el-badge class="filter-btn" is-dot :hidden="!isBadgeActiveFilter">
+        <el-button size="small" plain @click="toggleFilter">
+          <el-icon class="el-icon-s-operation" />
+          Фильтры
+        </el-button>
+      </el-badge>
+    </div>
+
+    <!-- Filters-->
+    <div class="page-container__filter-data">
+      <div class="filter-data">
+        <transition name="fade-transform" mode="out-in">
+          <div v-if="isActiveFilter" class="filter-data__content">
+            <el-form
+              ref="filterQuery"
+              :model="filterQuery"
+              label-position="top"
+              class="filter-data__form"
+              label-width="120px"
+            >
+              <div class="filter-data__row">
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">По названию</span>
+                  <el-input
+                    v-model="filterQuery.search"
+                    clearable
+                    size="medium"
+                    :style="device !== 'mobile' && 'width: 220px'"
+                    placeholder="Имя предложения"
+                    class="filter-item"
+                  >
+                    <i slot="prefix" class="el-input__icon el-icon-search" />
+                  </el-input>
+                </div>
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">Статус</span>
+                  <el-select
+                    v-model="filterQuery.statuses"
+                    size="medium"
+                    clearable
+                    multiple
+                    placeholder="Статус"
+                  >
+                    <template slot="prefix">
+                      <el-icon class="el-icon-files" />
+                    </template>
+                    <el-option
+                      v-for="item in statuses"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">Способ оплаты</span>
+                  <el-select
+                    v-model.number="filterQuery.payMethod"
+                    size="medium"
+                    clearable
+                    placeholder="Платежная система"
+                  >
+                    <template slot="prefix">
+                      <el-icon class="el-icon-wallet" />
+                    </template>
+                    <el-option
+                      v-for="item in paymethodList"
+                      :key="item.Id"
+                      :label="item.PaymethodTitle"
+                      :value="item.Id"
+                    >
+                      <select-option :paymethod="item" />
+                    </el-option>
+                  </el-select>
+                </div>
+
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">ID предложения</span>
+                  <el-input
+                    v-model="filterQuery.contractId"
+                    clearable
+                    size="medium"
+                    :style="device !== 'mobile' && 'width: 220px'"
+                    placeholder="Например, TapLGD0"
+                    class="filter-item"
+                  >
+                    <i slot="prefix" class="el-input__icon el-icon-search" />
+                  </el-input>
+                </div>
+              </div>
+
+              <div class="filter-data__row">
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">Дата создания</span>
+                  <el-date-picker
+                    v-model="filterQuery.startDate"
+                    v-mask="'##.##.####'"
+                    size="medium"
+                    type="date"
+                    format="dd.MM.yyyy"
+                    placeholder="Выберите дату"
+                  >
+                  </el-date-picker>
+                </div>
+                <div class="filter-data__form-item">
+                  <span class="filter-data__form-label">Дата закрытия</span>
+                  <el-date-picker
+                    v-model="filterQuery.endDate"
+                    v-mask="'##.##.####'"
+                    size="medium"
+                    type="date"
+                    format="dd.MM.yyyy"
+                    placeholder="Выберите дату"
+                  >
+                  </el-date-picker>
+                </div>
+
+                <div
+                  class="filter-data__form-item filter-data__form-item--paymethod"
+                >
+                  <div class="filter-data__selected-item">
+                    <payment-card
+                      v-if="filterQuery.payMethod === 2"
+                      :paymethod="paymethodList.find(x => x.Id === 2)"
+                      :type-form="true"
+                    />
+                  </div>
+
+                  <div class="filter-data__selected-item">
+                    <payment-wmp
+                      v-if="filterQuery.payMethod === 1"
+                      :type-form="true"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="filter-data__actions">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-refresh-left"
+                  class="filter-data__reset"
+                  @click="resetFormFilter"
+                  >Сбросить фильтры</el-button
+                >
+                <el-button
+                  size="mini"
+                  type="primary"
+                  icon="el-icon-circle-close"
+                  class="filter-data__close"
+                  @click="toggleFilter"
+                  >Закрыть</el-button
+                >
+              </div>
+            </el-form>
+          </div>
+        </transition>
+      </div>
+    </div>
+
+    <!-- Content -->
     <div class="page-container__wrap-pagination">
       <loading-data v-if="loadingData" />
       <div class="deals">
-        <data-empty v-if="items.length <= 0 && !loadingData">
+        <data-empty v-if="items.length <= 0 && isFiltering">
+          <template v-slot:text>
+            Ничего не найдено
+          </template>
+        </data-empty>
+
+        <data-empty v-if="items.length <= 0 && !isFiltering">
           <template v-slot:text>
             {{ textDataEmpty }}
           </template>
         </data-empty>
 
         <div v-for="item in items" :key="item.Id" class="deals__item">
-          <div class="contract">
-            <arrow v-if="device !== 'mobile'" />
-            <router-link
-              :to="`deals/${item.Id}`"
-              tag="div"
-              class="contract__body"
-            >
-              <div class="contract__Created">
-                <span class="contract__CreatedMonthDay">{{
-                  item.Created | formatDateDayMonth
-                }}</span>
-                <span class="contract__CreatedYear">{{
-                  item.Created | formatDateYear
-                }}</span>
-              </div>
-
-              <div class="contract__Column">
-                <div class="contract__Name">
-                  {{ item.Contract.Name | uppercaseFirst }}
-                </div>
-
-                <div class="contract__Panel">
-                  <div class="contract__Category">
-                    {{ item.Contract.CategoryId | getCategoryName }}
-                  </div>
-
-                  <div class="contract__Paymethods">
-                    <el-tooltip
-                      v-if="item.PayMethod === 1"
-                      class="item"
-                      content="Способ оплаты WebMoney"
-                      placement="top-start"
-                    >
-                      <WebmoneyLogo
-                        class="contract__Paymethod contract__Paymethod--webmoney"
-                      />
-                    </el-tooltip>
-
-                    <el-tooltip
-                      v-if="item.PayMethod === 2"
-                      class="item"
-                      content="Способ оплаты Банковская карта"
-                      placement="top-start"
-                    >
-                      <CreditCardLogo
-                        class="contract__Paymethod contract__Paymethod--card"
-                      />
-                    </el-tooltip>
-                  </div>
-
-                  <div v-if="device !== 'mobile'" class="contract__status">
-                    <status
-                      :data-statuses="dealsStatuses"
-                      :status-id="item.Status"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="contract__item-row">
-                <div class="contract__Amount">
-                  {{ item.Contract.Amount | toThousandFilter }}
-                  <span class="contract__Currency">₽</span>
-                </div>
-              </div>
-
-              <div class="contract__Duration">
-                <span class="contract__DurationTitle">
-                  <el-icon class="contract__DurationIcon el-icon-time" />
-                  Дата закрытия
-                </span>
-
-                <div class="contract__DurationValue">
-                  <span>{{ item.ClosingAt | formatDateDayMonth }}</span
-                  >&nbsp;
-                  <span>{{ item.ClosingAt | formatDateYear }}</span>
-                </div>
-              </div>
-
-              <div v-if="device === 'mobile'" class="contract__status">
-                <status
-                  :data-statuses="dealsStatuses"
-                  :status-id="item.Status"
-                />
-              </div>
-            </router-link>
-
-            <div class="contract__Actions">
-              <div class="contract__ActionsItem">
-                <template v-if="!checkClosingAtDate(item.ClosingAt)">
-                  <el-popconfirm
-                    v-if="item.Status === 1"
-                    confirm-button-text="Подтвердить"
-                    cancel-button-text="Отмена"
-                    placement="top"
-                    class="contract__btn-popconfirm"
-                    :title="`Отменить ${item.Contract.Name} ?`"
-                    @onConfirm="cancelContract(item.Id)"
-                  >
-                    <el-button
-                      slot="reference"
-                      type="danger"
-                      size="small"
-                      circle
-                      plain
-                    >
-                      <closeIcon />
-                    </el-button>
-                  </el-popconfirm>
-                  <el-tooltip v-else placement="top">
-                    <div slot="content">При текущем статусе не отменить</div>
-                    <el-button type="info" size="small" circle plain>
-                      <closeIcon class="contract__btn-icon" />
-                    </el-button>
-                  </el-tooltip>
-                </template>
-                <template v-else>
-                  <el-tooltip placement="top">
-                    <div slot="content">Время на отмену истекло</div>
-                    <el-button type="info" size="small" circle plain>
-                      <closeIcon class="contract__btn-icon" />
-                    </el-button>
-                  </el-tooltip>
-                </template>
-              </div>
-            </div>
-          </div>
+          <list-item :item="item" @cancel="cancelDeal" />
         </div>
       </div>
 
@@ -152,7 +196,7 @@
         :total="total"
         :page.sync="listQuery.offset"
         :limit.sync="listQuery.limit"
-        @pagination="fetchDeals"
+        @pagination="fetchDeals(false)"
       />
     </div>
   </div>
@@ -162,40 +206,61 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import DataEmpty from '@/components/DataEmpty';
 import Pagination from '@/components/Pagination';
+import SelectOption from './components/SelectOption';
+import PaymentCard from '@/components/PaymentCard';
+import PaymentWmp from '@/components/PaymentWmp';
 import LoadingData from '@/components/LoadingData';
-import CreditCardLogo from '../../../../public/creditCard.svg';
-import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
-import CloseIcon from '../../../../public/close.svg';
-import { Status } from './components';
-import Arrow from '@/components/Arrow';
-import dayjs from 'dayjs';
+import ListItem from './components/ListItem';
+import _debounce from 'lodash.debounce';
+import { resetForm } from '@/mixins/common';
+import { mask } from 'vue-the-mask';
 
 export default {
   name: 'Deals',
   components: {
-    Arrow,
-    Status,
+    ListItem,
     LoadingData,
     DataEmpty,
     Pagination,
-    CloseIcon,
-    CreditCardLogo,
-    WebmoneyLogo,
+    PaymentWmp,
+    PaymentCard,
+    SelectOption,
   },
+  directives: {
+    mask,
+  },
+  mixins: [resetForm],
   data: () => ({
     textDataEmpty: 'У вас ещё нет продаж',
+    isActiveFilter: false,
     loadingData: false,
     cancelingDeal: false,
     total: 0,
+    paymethodList: [
+      {
+        Id: 1,
+        Paymethod: 'WebMoney',
+        PaymethodTitle: 'WebMoney',
+      },
+      {
+        Id: 2,
+        Paymethod: 'Cards',
+        PaymethodTitle: 'Банковская карта',
+      },
+    ],
+    isBadgeActiveFilter: false,
+    filterQuery: {
+      startDate: '',
+      endDate: '',
+      search: '',
+      statuses: [],
+      payMethod: '',
+      contractId: '',
+    },
+    isFiltering: false,
     listQuery: {
       offset: 1,
       limit: 10,
-      //startDate: '',
-      //endDate: '',
-      //search: '',
-      //statuses: '',
-      //payMethod: '',
-      //contractId: '',
     },
     items: [],
     pagination: {},
@@ -206,11 +271,44 @@ export default {
     ...mapState({
       dealsStatuses: state => state.deal.statuses,
     }),
+
+    statuses() {
+      let arr = Object.keys(this.dealsStatuses).map(k => {
+        return {
+          id: k,
+          name: this.dealsStatuses[k],
+        };
+      });
+      return arr;
+    },
   },
 
   watch: {
     // при изменениях маршрута запрашиваем данные снова
     $route: 'fetchDeals',
+
+    filterQuery: {
+      handler(newVal) {
+        let val = Object.values(newVal).map(
+          key => key || (Array.isArray(key) && key.length > 0)
+        );
+
+        this.fetchDebounceGetDeals();
+
+        if (
+          val.every(
+            item => item === false || (Array.isArray(item) && item.length <= 0)
+          )
+        ) {
+          this.isBadgeActiveFilter = false;
+          this.isFiltering = false;
+          return;
+        }
+        this.isBadgeActiveFilter = true;
+        this.isFiltering = true;
+      },
+      deep: true,
+    },
   },
 
   created() {
@@ -221,7 +319,11 @@ export default {
   methods: {
     ...mapActions('deal', ['getDeals', 'dealCancel', 'getDealsStatus']),
 
-    async fetchDeals() {
+    fetchDebounceGetDeals: _debounce(function() {
+      this.fetchDeals(true);
+    }, 150),
+
+    async fetchDeals(isFilter = false) {
       this.loadingData = true;
       const offset =
         this.listQuery.offset === 1
@@ -229,8 +331,9 @@ export default {
           : (this.listQuery.offset - 1) * this.listQuery.limit;
 
       const { Items, Pagination } = await this.getDeals({
-        ...this.listQuery,
-        offset,
+        limit: this.listQuery.limit,
+        offset: isFilter ? 0 : offset,
+        ...this.filterQuery,
       });
       const { Total } = Pagination;
 
@@ -241,7 +344,7 @@ export default {
       }, 300);
     },
 
-    cancelContract(Id) {
+    cancelDeal(Id) {
       this.cancelingDeal = true;
       this.dealCancel(Id)
         .then(() => {
@@ -256,11 +359,12 @@ export default {
         .finally(() => (this.cancelingDeal = false));
     },
 
-    checkClosingAtDate(closingAtDate) {
-      const today = dayjs(new Date());
-      const pastDate = dayjs(closingAtDate);
-      // дата с сервера до сегодняшнего дня
-      return pastDate.isBefore(today);
+    toggleFilter() {
+      this.isActiveFilter = !this.isActiveFilter;
+    },
+
+    resetFormFilter() {
+      this.resetForm(this.filterQuery);
     },
   },
 };
@@ -268,7 +372,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-@import '@/styles/contract-list-item.scss';
+@import '@/styles/filter-data.scss';
 
 .deals {
   max-width: 1100px;
@@ -312,4 +416,12 @@ export default {
   }
 }
 
+.page-contracts-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media (max-width: $mq-mobile) {
+    margin-bottom: 48px;
+  }
+}
 </style>

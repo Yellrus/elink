@@ -205,10 +205,10 @@ import CloseIcon from '../../../../public/close.svg';
 import LoadingData from '@/components/LoadingData';
 import Badge from '@/components/Badge';
 import { Status } from './components';
-import dayjs from 'dayjs';
 import SocialSharing from '@/components/SocialSharing';
 import { getCommission } from '@/api/contract';
 import DealsForContract from './components/DealsForContract';
+import { checkDate } from '@/mixins/common';
 
 export default {
   name: 'ContractDetail',
@@ -225,6 +225,7 @@ export default {
   directives: {
     clipboard,
   },
+  mixins: [checkDate],
   data: () => ({
     id: null,
     closingContract: false,
@@ -321,10 +322,7 @@ export default {
     },
 
     checkDurationDate(durationDate) {
-      const today = dayjs(new Date());
-      const pastDate = dayjs(durationDate);
-      // дата с сервера до сегодняшнего дня
-      return pastDate.isBefore(today);
+      return this.checkDate(durationDate);
     },
 
     getCurrentCommission() {
@@ -355,6 +353,13 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+  }
+
+  &__heading {
+    cursor: text;
+    &:hover {
+      color: currentColor;
+    }
   }
 
   &__paymethod {
