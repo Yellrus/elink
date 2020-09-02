@@ -6,23 +6,25 @@
           <user-avatar :size="100" />
           <div class="user-info__status">
             <el-popover
-              v-if="
-                Number(profile.SmevIdentificatedStatus) === 100 ||
-                  Number(profile.SmevIdentificatedStatus) === 501 ||
-                  Number(profile.SmevIdentificatedStatus) < 100
-              "
+              v-if="statuses.includes(+profileFullData.DocumentStatus)"
               placement="top-start"
               title="Статус"
               width="250"
               trigger="hover"
-              :content="getStatus(profile.SmevIdentificatedStatus).title"
+              :content="getStatus(+profileFullData.DocumentStatus).title"
             >
               <el-button
                 slot="reference"
                 circle
-                :type="getStatus(profile.SmevIdentificatedStatus).type"
+                :type="getStatus(+profileFullData.DocumentStatus).type"
               >
-                <el-icon :class="`user-info__status-icon ${getStatus(profile.SmevIdentificatedStatus).icon}`" />
+                <el-icon
+                  :class="
+                    `user-info__status-icon ${
+                      getStatus(+profileFullData.DocumentStatus).icon
+                    }`
+                  "
+                />
               </el-button>
             </el-popover>
           </div>
@@ -65,25 +67,25 @@
       <div class="user-info__activity">
         <div class="user-info__result result">
           <div class="result__icon-wrap">
-            <el-icon class="result__icon el-icon-check"></el-icon>
+            <el-icon class="result__icon el-icon-check" />
           </div>
           <div class="result__title">
-            Успешные сделки
+            Успешные продажи
           </div>
           <div class="result__count">
-            12
+            {{ profileFullData.CountOfSuccessful }}
           </div>
         </div>
 
         <div class="user-info__result result">
           <div class="result__icon-wrap">
-            <el-icon class="result__icon el-icon-warning-outline"></el-icon>
+            <el-icon class="result__icon el-icon-warning-outline" />
           </div>
           <div class="result__title">
-            Спорные сделки
+            Спорные продажи
           </div>
           <div class="result__count">
-            0
+            {{ profileFullData.DisputesCount }}
           </div>
         </div>
 
@@ -92,10 +94,10 @@
             <el-icon class="result__icon el-icon-goods" />
           </div>
           <div class="result__title">
-            Общая сумма сделок
+            Общая сумма продаж
           </div>
           <div class="result__count">
-            {{ '123650' | toThousandFilter }}
+            {{ profileFullData.SumOfSuccessful | toThousandFilter }}
           </div>
         </div>
       </div>
@@ -117,11 +119,13 @@ export default {
       icon: 'el-icon-phone-outline',
       label: 'Телефон',
     },
+    statuses: [1, 2, 3, 4, 5],
   }),
   computed: {
     ...mapGetters(['device', 'wmid']),
     ...mapGetters({
       profile: 'profile/getProfile',
+      profileFullData: 'profile/getProfileFullData',
     }),
     ...mapState({
       device: state => state.app.device,
@@ -141,22 +145,34 @@ export default {
     getStatus(status) {
       let statusNumber = Number(status);
 
-      if (statusNumber === 100) {
+      if (statusNumber === 1) {
         return {
-          title: 'Данные подтверждены',
+          title: 'Документы не поданы, закрытых сделок нет',
           icon: 'el-icon-success',
-          type: 'success',
+          type: 'warning',
         };
-      } else if (statusNumber < 100) {
+      } else if (statusNumber === 2) {
         return {
-          title: 'Выполняется проверка данных',
+          title: 'Документы не поданы, закрытые сделки есть',
           icon: 'el-icon-warning',
           type: 'warning',
         };
-      } else if (statusNumber === 501) {
+      } else if (statusNumber === 3) {
         return {
-          title: 'Данные не подтвердились (проверьте корректность данных и обновите их, либо обратитесь в поддержку). Выплаты на карты невозможны без заполнения ваших данных',
+          title: 'Данные для идентфикации проходят проверку',
+          icon: 'el-icon-loading',
+          type: 'warning',
+        };
+      } else if (statusNumber === 4) {
+        return {
+          title: 'Данные неверные',
           icon: 'el-icon-error',
+          type: 'danger',
+        };
+      } else if (statusNumber === 5) {
+        return {
+          title: 'Данные успешно проверены',
+          icon: 'el-icon-success',
           type: 'danger',
         };
       }
@@ -203,7 +219,7 @@ export default {
     z-index: 2;
   }
 
-  &__status-icon  {
+  &__status-icon {
     font-size: 24px;
     color: #fff;
   }

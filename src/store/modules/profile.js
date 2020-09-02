@@ -10,6 +10,7 @@ const state = {
   lastAddedPaymethod: {},
   paymethods: [],
   profile: {},
+  profileFullData: {},
   dialogAddPaymethod: false,
   isLoaded: false,
 };
@@ -17,6 +18,7 @@ const state = {
 const getters = {
   getWmpPurse: state => state.paymethods.find(item => item.Paymethod === 'WebMoneyWMP' || item.Paymethod === 'WebMoneyWMPTest'),
   getProfile: state => state.profile,
+  getProfileFullData: state => state.profileFullData,
   getPaymethods: state => state.paymethods.filter(item => item.Paymethod === 'Cards' || item.Paymethod === 'CardsTest')
 };
 
@@ -27,6 +29,10 @@ const mutations = {
 
   SET_PROFILE: (state, profile) => {
     state.profile = profile;
+  },
+
+  SET_FULL_DATA_PROFILE: (state, profileFullData) => {
+    state.profileFullData = profileFullData;
   },
 
   SET_NEW_PAYMETHOD: (state, lastAddedPaymethod) => {
@@ -79,6 +85,7 @@ const actions = {
       getInfo()
         .then(response => {
           const { Profile, UserLogin, WmpPurses } = response;
+          commit('SET_FULL_DATA_PROFILE', response);
           commit('SET_PROFILE', Profile);
           commit('SET_PAYMETHODS', Profile.PaymentAccounts);
           commit('SET_WMID', UserLogin);
