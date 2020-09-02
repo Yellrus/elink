@@ -87,6 +87,7 @@
                   value="Cards"
                   class="paymethod-radio__input"
                   name="paymethodType"
+                  :disabled="!wmpPurse"
                   type="checkbox"
                 />
                 <label class="paymethod-radio__name" for="paymethod_1">
@@ -207,7 +208,11 @@
 
         <el-row :gutter="50">
           <el-col type="flex" :xs="24" :sm="12" :md="12">
-            <el-form-item label="Стоимость" prop="Amount" class="is-required">
+            <el-form-item
+              label="Стоимость"
+              prop="Amount"
+              class="is-required"
+            >
               <el-input
                 v-model="model.Amount"
                 v-currency="options"
@@ -217,6 +222,21 @@
                   ><el-icon class="el-icon-money"
                 /></template>
               </el-input>
+              <div class="form-add-entity__amount-info">
+                <create-amount-info
+                  :amount="numberValue"
+                  :commissions="{
+                    Wmp: WmpCommission,
+                    Card: CardCommission,
+                    MaxAmount,
+                    MinAmount,
+                  }"
+                  :paymethod-type="{
+                    Card: paymethodTypeCards,
+                    Wmp: paymethodTypeWmp,
+                  }"
+                />
+              </div>
             </el-form-item>
           </el-col>
 
@@ -232,42 +252,16 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
+        </el-row>
 
-          <div class="commission">
-            <el-icon class="el-icon-info commission__icon-info" />
-            <div class="commission__items">
-              <div class="commission__row">
-                <span class="commission__title">Коммиссия:</span>
-                <span class="commission__item">
-                  <WebmoneyLogo
-                    class="commission__icon commission__icon--webmoney"
-                  />
-                  <span class="commission__value">{{
-                    WmpCommission | toThousandFilter
-                  }}</span
-                  >&nbsp; ₽</span
-                >
-                <span class="commission__item"
-                  ><el-icon
-                    class="commission__icon commission__icon--card el-icon-bank-card"
-                  />
-                  <span class="commission__value">{{
-                    CardCommission | toThousandFilter
-                  }}</span
-                  >&nbsp; ₽</span
-                >
-              </div>
-              <div class="commission__row">
-                <span class="commission__title">Максимальная сумма:</span>
-                <span class="commission__item">
-                  <span class="commission__value">{{
-                    MaxAmount | toThousandFilter
-                  }}</span
-                  >&nbsp; ₽</span
-                >
-              </div>
-            </div>
-          </div>
+        <el-row :gutter="50">
+          <create-commission-info
+            :commissions="{
+              Wmp: WmpCommission,
+              Card: CardCommission,
+              MaxAmount,
+            }"
+          />
         </el-row>
 
         <div class="form-add-entity__footer">
@@ -323,7 +317,12 @@ import AddNewPaymethod from '@/components/AddNewPaymethod';
 import { CurrencyDirective, parseCurrency } from 'vue-currency-input';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CreditCardBlackLogo from '../../../../public/creditCardBlack.svg';
-import { SelectOption, SuccessCreated } from './components';
+import {
+  SelectOption,
+  SuccessCreated,
+  CreateCommissionInfo,
+  CreateAmountInfo,
+} from './components';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import PaymentWmp from '@/components/PaymentWmp';
 import PaymentCard from '@/components/PaymentCard';
@@ -337,6 +336,8 @@ export default {
     currency: CurrencyDirective,
   },
   components: {
+    CreateCommissionInfo,
+    CreateAmountInfo,
     LoadingData,
     PaymentCard,
     PaymentWmp,
@@ -527,6 +528,13 @@ export default {
     paymethodTypeCards(newVal) {
       if (!newVal) {
         this.$set(this.model, 'CardPurseId', '');
+        if (this.wmpPurse) {
+          this.paymethodTypeWmp = true;
+        }
+
+        if (!this.wmpPurse) {
+          this.paymethodTypeCards = true;
+        }
       }
 
       this.getCurrentCommission();
@@ -535,11 +543,13 @@ export default {
     paymethodTypeWmp(newVal) {
       if (!newVal) {
         this.$set(this.model, 'WmpPurseId', '');
+        this.paymethodTypeCards = true;
       } else {
         if (this.wmpPurse) {
           this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
         } else {
           console.log('Нет wmp');
+          this.paymethodTypeCards = true;
         }
       }
 
@@ -580,7 +590,7 @@ export default {
         if (!valid) return;
         if (!this.getPayMethods) {
           this.$message({
-            message: 'Не указан способ оплаты!',
+            message: 'Выберите платежную систему!',
             type: 'error',
             duration: 2000,
           });
@@ -650,103 +660,6 @@ export default {
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
-.commission {
-  //background-color: #eaf0f7;
-  background-color: #ebf5ff;
-  padding: 10px 30px;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    left: 58px;
-    top: -7px;
-    display: block;
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    user-select: none;
-    width: 363px;
-    height: 287px;
-    opacity: 0.3;
-    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
-  }
-
-  &__items {
-    display: flex;
-    flex-direction: column;
-
-    @media (max-width: $mq-mobile) {
-      align-items: flex-start;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-      flex-direction: row;
-    }
-  }
-
-  &__item {
-    color: #0f213c;
-    font-size: 12px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    min-width: 40px;
-  }
-
-  &__row {
-    display: flex;
-    align-items: center;
-
-    &:not(:last-child) {
-      margin-bottom: 3px;
-    }
-
-    @media (max-width: $mq-mobile) {
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 5px;
-    }
-  }
-
-  &__icon {
-    margin-right: 3px;
-    &--card {
-      font-size: 16px;
-    }
-    &--webmoney {
-      width: 13px;
-      font-size: 16px;
-
-      path {
-        fill: rgba(#0f213c, 0.65);
-      }
-    }
-  }
-
-  &__icon-info {
-    font-size: 20px;
-    color: #78a9d9;
-    margin-right: 12px;
-  }
-
-  &__title {
-    font-size: 13px;
-    min-width: 140px;
-    margin-right: 15px;
-
-    @media (max-width: $mq-mobile) {
-      min-width: auto;
-    }
-  }
-
-  &__value {
-    font-weight: 500;
-    margin-right: 2px;
-  }
-}
-
 .form-add-entity {
   &__payments {
     margin-bottom: 26px;
@@ -809,6 +722,10 @@ export default {
     &:not(:last-child) {
       margin-bottom: 6px;
     }
+  }
+
+  &__amount-info {
+    line-height: 1.2;
   }
 
   @media (max-width: $mq-mobile) {
