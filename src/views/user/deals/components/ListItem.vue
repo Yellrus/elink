@@ -55,6 +55,30 @@
         <div class="contract__Amount">
           {{ item.Contract.Amount | toThousandFilter }}
           <span class="contract__Currency">₽</span>
+          <div class="contract__AmountWithCommission">
+            <el-popover
+              placement="top-start"
+              transition="el-zoom-in-bottom"
+              trigger="hover"
+            >
+              <tooltip-info :item="item" />
+              <div slot="reference" class="contract__AmountInfoIcon">
+                <el-icon class="el-icon-question" />
+              </div>
+            </el-popover>
+            {{
+              item.Contract.Amount
+                | amountWithCommission(
+                  `${
+                    item.PayMethod === 2
+                      ? item.Contract.CardCommission
+                      : item.Contract.WmpCommission
+                  }`
+                )
+                | toThousandFilter
+            }}
+            ₽
+          </div>
         </div>
       </div>
 
@@ -120,10 +144,12 @@ import CloseIcon from '../../../../../public/close.svg';
 import Arrow from '@/components/Arrow';
 import { checkDate } from '@/mixins/common';
 import { mapGetters, mapState } from 'vuex';
+import TooltipInfo from './TooltipInfo';
 
 export default {
   name: 'ListItem',
   components: {
+    TooltipInfo,
     Status,
     Arrow,
     CreditCardLogo,

@@ -167,9 +167,9 @@
               {{ textDataEmpty }}
             </template>
           </data-empty>
-          <data-empty v-if="items.length <= 0 && !isFiltering">
+          <data-empty v-if="items.length <= 0 && isFiltering">
             <template v-slot:text>
-              {{ textDataEmpty }}
+              Ничего не найдено
             </template>
           </data-empty>
           <div

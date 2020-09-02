@@ -2,7 +2,7 @@
   <div class="page-container">
     <!-- Header -->
     <div class="page-container__header">
-      <h1 class="page-contracts-heading">Мои сделки по продаже</h1>
+      <h1 class="page-contracts-heading">Мои продажи</h1>
       <el-badge class="filter-btn" is-dot :hidden="!isBadgeActiveFilter">
         <el-button size="small" plain @click="toggleFilter">
           <el-icon class="el-icon-s-operation" />

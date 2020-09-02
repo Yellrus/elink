@@ -85,6 +85,34 @@
               <p class="detail__desc">
                 {{ dealDetail.Contract.Description | uppercaseFirst }}
               </p>
+              <span class="detail__title">Стоимость</span>
+              <div class="detail__amount">
+                {{ dealDetail.Contract.Amount | toThousandFilter }} ₽
+              </div>
+              <span class="detail__title">Коммисия</span>
+              <div class="detail__commission">
+                {{
+                  (dealDetail.PayMethod === 2
+                    ? dealDetail.Contract.CardCommission
+                    : dealDetail.Contract.WmpCommission) | toThousandFilter
+                }}
+                ₽
+              </div>
+              <span class="detail__title">Сумма к получению</span>
+              <div class="detail__amount-withdraw">
+                {{
+                  dealDetail.Contract.Amount
+                    | amountWithCommission(
+                      `${
+                        dealDetail.PayMethod === 2
+                          ? dealDetail.Contract.CardCommission
+                          : dealDetail.Contract.WmpCommission
+                      }`
+                    )
+                    | toThousandFilter
+                }}
+                ₽
+              </div>
             </div>
 
             <div v-if="dealDetail.DisputeReason" class="detail__dispute">
@@ -305,6 +333,28 @@ export default {
 }
 
 .detail {
+  &__desc {
+    margin-bottom: 14px;
+  }
+  &__amount {
+    font-size: 19px;
+    font-weight: 500;
+    margin-top: -3px;
+  }
+
+  &__amount-withdraw {
+    font-size: 32px;
+    font-weight: 500;
+    margin-top: -3px;
+    color: #527ece;
+  }
+
+  &__commission {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+
   &__close-text {
     max-width: 80%;
     font-size: 12px;
