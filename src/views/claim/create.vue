@@ -201,6 +201,9 @@ export default {
       this.getByDisputeDeal(this.id)
         .then(disputeDeal => {
           this.disputeDeal = disputeDeal;
+          if (this.disputeDeal && this.disputeDeal.Email) {
+            this.$set(this.model, 'email', this.disputeDeal.Email);
+          }
         })
         .finally(() => (this.loading = false));
     },
