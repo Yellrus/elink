@@ -184,6 +184,11 @@ export default {
         .then(data => {
           this.contract = data;
 
+          if (data === null) {
+            this.$router.replace('404');
+            return;
+          }
+
           if (this.contract.Card) {
             this.paymethod = 2;
           } else if (this.contract.WmpPurse) {
