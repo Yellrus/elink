@@ -169,6 +169,14 @@ export const constantRoutes = [
   },
 
   {
+    path: '/pay-failed-funds-transferred',
+    component: () => import('@/views/action-page/pay-failed-funds-transferred'),
+    name: 'Pay Failed Transferred',
+    meta: { public: true },
+    hidden: true,
+  },
+
+  {
     path: '/auth-work',
     component: () => import('@/views/login/auth-work'),
     hidden: true,
