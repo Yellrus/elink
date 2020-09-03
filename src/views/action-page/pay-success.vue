@@ -9,7 +9,7 @@
       <div class="pay__icon-wrap">
         <el-icon class="pay__icon pay__icon--success el-icon-success" />
       </div>
-      <h1 class="pay__title page-action__title">Успешная оплата!</h1>
+      <h1 class="pay__title page-action__title">Успех!</h1>
       <h3 class="pay__subtitle">Ваша оплата была произведена успешно</h3>
 
       <div class="pay__info">

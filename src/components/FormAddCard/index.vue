@@ -137,7 +137,7 @@ export default {
 
   watch: {
     curNumber(newValue) {
-      let str = newValue.split(' ').join('');
+      let str = newValue && newValue.split(' ').join('');
       if (str && str.length < 6) {
         return;
       }
