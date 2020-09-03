@@ -275,7 +275,7 @@ export default {
             type: 'success',
             duration: 1500,
           });
-          this.fetchDeals();
+          this.fetchDeal();
         })
         .catch(() => (this.cancelingDeal = false))
         .finally(() => (this.cancelingDeal = false));

@@ -8,7 +8,8 @@
             <el-popover
               v-if="statuses.includes(+profileFullData.DocumentStatus)"
               placement="top-start"
-              title="Статус проверки личных данных"
+              title="Статус проверки"
+              width="250"
               trigger="hover"
               :content="getStatus(+profileFullData.DocumentStatus).title"
             >
@@ -65,6 +66,7 @@
       </div>
 
       <div
+        v-if="+profileFullData.DocumentStatus !== 5"
         :class="
           `profile-status profile-status--${
             getStatus(+profileFullData.DocumentStatus).type
@@ -72,17 +74,6 @@
         "
       >
         <span>{{ getStatus(+profileFullData.DocumentStatus).title }} </span>
-        <br />
-        <span
-          v-if="
-            +profileFullData.DocumentStatus === 1 ||
-              +profileFullData.DocumentStatus === 2
-          "
-          class="profile-status__title"
-        >
-          Для вывода средств по продажам через банковские карты, необходимо
-          пройти идентификацию
-        </span>
       </div>
 
       <div class="user-info__activity">
@@ -168,31 +159,31 @@ export default {
 
       if (statusNumber === 1) {
         return {
-          title: 'Документы не поданы, закрытых продаж нет',
+          title: 'Аккаунт не идентифицирован. Ограничения на вывод средств',
           icon: 'el-icon-warning',
           type: 'warning',
         };
       } else if (statusNumber === 2) {
         return {
-          title: 'Документы не поданы, закрытые продажи есть',
+          title: 'Аккаунт не идентефицирован. Внимание! У вас есть продажи, по которым запрещён вывод средств',
           icon: 'el-icon-error',
           type: 'danger',
         };
       } else if (statusNumber === 3) {
         return {
-          title: 'Данные для идентфикации проходят проверку',
+          title: 'Идёт идентфикация аккаунта',
           icon: 'el-icon-loading',
           type: 'wait',
         };
       } else if (statusNumber === 4) {
         return {
-          title: 'Данные неверные',
+          title: 'Неуспешная идентификация аккаунта',
           icon: 'el-icon-error',
           type: 'danger',
         };
       } else if (statusNumber === 5) {
         return {
-          title: 'Данные успешно проверены',
+          title: 'Успешная идентификация аккаунта',
           icon: 'el-icon-success',
           type: 'success',
         };
