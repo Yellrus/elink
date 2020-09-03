@@ -71,15 +71,14 @@
           }`
         "
       >
-        <span class="profile-status__title"
-          >{{ getStatus(+profileFullData.DocumentStatus).title }}
-        </span>
+        <span>{{ getStatus(+profileFullData.DocumentStatus).title }} </span>
         <br />
         <span
           v-if="
             +profileFullData.DocumentStatus === 1 ||
               +profileFullData.DocumentStatus === 2
           "
+          class="profile-status__title"
         >
           Для вывода средств по продажам через банковские карты, необходимо
           пройти идентификацию
@@ -176,14 +175,14 @@ export default {
       } else if (statusNumber === 2) {
         return {
           title: 'Документы не поданы, закрытые продажи есть',
-          icon: 'el-icon-warning',
-          type: 'warning',
+          icon: 'el-icon-error',
+          type: 'danger',
         };
       } else if (statusNumber === 3) {
         return {
           title: 'Данные для идентфикации проходят проверку',
           icon: 'el-icon-loading',
-          type: 'warning',
+          type: 'wait',
         };
       } else if (statusNumber === 4) {
         return {
@@ -369,20 +368,29 @@ export default {
   border-width: 1px;
   border-style: solid;
   margin-top: 5px;
+
   &__title {
     display: inline-block;
     vertical-align: middle;
-    margin-bottom: 8px;
+    margin-top: 8px;
   }
+
   &--warning {
     border-color: #faecd8;
     background-color: #fff3e0;
     color: #c07426;
   }
+
   &--danger {
     color: #f56c6c;
     background-color: #fef0f0;
     border-color: #fbc4c4;
+  }
+
+  &--wait {
+    background-color: #ede7f6;
+    border-color: #d1c4e9;
+    color: #7e57c2;
   }
 
   &--success {
