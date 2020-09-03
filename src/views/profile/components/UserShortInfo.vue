@@ -64,8 +64,26 @@
         >
       </div>
 
-      <div :class="`profile-status profile-status--${getStatus(+profileFullData.DocumentStatus).type}`">
-        {{ getStatus(+profileFullData.DocumentStatus).title }}
+      <div
+        :class="
+          `profile-status profile-status--${
+            getStatus(+profileFullData.DocumentStatus).type
+          }`
+        "
+      >
+        <span class="profile-status__title"
+          >{{ getStatus(+profileFullData.DocumentStatus).title }}
+        </span>
+        <br />
+        <span
+          v-if="
+            +profileFullData.DocumentStatus === 1 ||
+              +profileFullData.DocumentStatus === 2
+          "
+        >
+          Для вывода средств по продажам через банковские карты, необходимо
+          пройти идентификацию
+        </span>
       </div>
 
       <div class="user-info__activity">
@@ -151,13 +169,13 @@ export default {
 
       if (statusNumber === 1) {
         return {
-          title: 'Документы не поданы, закрытых сделок нет',
+          title: 'Документы не поданы, закрытых продаж нет',
           icon: 'el-icon-warning',
           type: 'warning',
         };
       } else if (statusNumber === 2) {
         return {
-          title: 'Документы не поданы, закрытые сделки есть',
+          title: 'Документы не поданы, закрытые продажи есть',
           icon: 'el-icon-warning',
           type: 'warning',
         };
@@ -346,16 +364,16 @@ export default {
 .profile-status {
   padding: 15px 7px;
   font-size: 12px;
-  line-height: 1;
+  line-height: 1.4;
   text-align: center;
   border-width: 1px;
   border-style: solid;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
   margin-top: 5px;
-
+  &__title {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 8px;
+  }
   &--warning {
     border-color: #faecd8;
     background-color: #fff3e0;
