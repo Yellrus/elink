@@ -168,15 +168,16 @@
     <div class="page-container__wrap-pagination">
       <loading-data v-if="loadingData" />
       <div class="deals">
+
         <data-empty v-if="items.length <= 0 && !loadingData && !isFiltering">
           <template v-slot:text>
-            Ничего не найдено
+            {{ textDataEmpty }}
           </template>
         </data-empty>
 
-        <data-empty v-if="items.length <= 0 && !isFiltering">
+        <data-empty v-if="items.length <= 0 && !loadingData && isFiltering">
           <template v-slot:text>
-            {{ textDataEmpty }}
+            Ничего не найдено
           </template>
         </data-empty>
 
