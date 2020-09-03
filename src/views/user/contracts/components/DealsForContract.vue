@@ -61,14 +61,14 @@
               </div>
             </div>
 
-            <div class="contract__item-row">
-              <div class="contract__Amount">
-                {{ item.Contract.Amount | toThousandFilter }}
-                <span class="contract__Currency">₽</span>
-              </div>
-            </div>
+<!--            <div class="contract__item-row">-->
+<!--              <div class="contract__Amount">-->
+<!--                {{ item.Contract.Amount | toThousandFilter }}-->
+<!--                <span class="contract__Currency">₽</span>-->
+<!--              </div>-->
+<!--            </div>-->
 
-            <div v-if="device === 'mobile'" class="contract__Duration">
+            <div class="contract__Duration">
               <span class="contract__DurationTitle">
                 <el-icon class="contract__DurationIcon el-icon-time" />
                 Дата закрытия
@@ -232,6 +232,10 @@ export default {
 
   &::before {
     content: none;
+  }
+
+  &__Duration {
+    margin-left: auto;
   }
 
   &__Created {

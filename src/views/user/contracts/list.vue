@@ -159,7 +159,7 @@
         <!-- List items -->
         <div class="contracts">
           <data-empty
-            v-if="items.length <= 0 && !loadingData"
+            v-if="items.length <= 0 && !loadingData && !isFiltering"
             :btn-title="btnDataEmptyTitle"
             :btn-url="`/contracts/create`"
           >

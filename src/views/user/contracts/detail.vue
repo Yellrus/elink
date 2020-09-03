@@ -27,7 +27,7 @@
             </div>
             <div class="detail__header">
               <div class="detail__header-item order-1">
-                <span class="detail__title">Дата продажи</span>
+                <span class="detail__title">Дата создания</span>
                 <div class="detail__created">
                   <span class="detail__created-month-day">{{
                     contractDetail.Created | formatDateDayMonth

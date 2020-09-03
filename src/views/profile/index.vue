@@ -122,8 +122,8 @@ export default {
   &__user {
     position: relative;
     width: 100%;
-    max-width: 350px;
-    margin-right: 20px;
+    max-width: 370px;
+    margin-right: 25px;
 
     @media (max-width: $mq-tablet-vertical) {
       max-width: 100%;

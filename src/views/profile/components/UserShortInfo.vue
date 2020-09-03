@@ -8,8 +8,7 @@
             <el-popover
               v-if="statuses.includes(+profileFullData.DocumentStatus)"
               placement="top-start"
-              title="Статус"
-              width="250"
+              title="Статус проверки личных данных"
               trigger="hover"
               :content="getStatus(+profileFullData.DocumentStatus).title"
             >
@@ -64,6 +63,11 @@
           >Мои личные данные</el-button
         >
       </div>
+
+      <div :class="`profile-status profile-status--${getStatus(+profileFullData.DocumentStatus).type}`">
+        {{ getStatus(+profileFullData.DocumentStatus).title }}
+      </div>
+
       <div class="user-info__activity">
         <div class="user-info__result result">
           <div class="result__icon-wrap">
@@ -148,7 +152,7 @@ export default {
       if (statusNumber === 1) {
         return {
           title: 'Документы не поданы, закрытых сделок нет',
-          icon: 'el-icon-success',
+          icon: 'el-icon-warning',
           type: 'warning',
         };
       } else if (statusNumber === 2) {
@@ -173,7 +177,7 @@ export default {
         return {
           title: 'Данные успешно проверены',
           icon: 'el-icon-success',
-          type: 'danger',
+          type: 'success',
         };
       }
     },
@@ -190,7 +194,6 @@ export default {
   //min-height: calc(100vh - 90px);
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 24px 0 0;
 
   @media (max-width: $mq-tablet-vertical) {
     min-height: auto;
@@ -254,6 +257,7 @@ export default {
     justify-content: center;
     flex-direction: column;
     margin-bottom: 40px;
+    margin-top: 24px;
   }
 
   &__list-info {
@@ -336,6 +340,37 @@ export default {
   &__count {
     margin-left: auto;
     font-weight: 600;
+  }
+}
+
+.profile-status {
+  padding: 15px 7px;
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+  border-width: 1px;
+  border-style: solid;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-top: 5px;
+
+  &--warning {
+    border-color: #faecd8;
+    background-color: #fff3e0;
+    color: #c07426;
+  }
+  &--danger {
+    color: #f56c6c;
+    background-color: #fef0f0;
+    border-color: #fbc4c4;
+  }
+
+  &--success {
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+    color: #67c23a;
   }
 }
 </style>
