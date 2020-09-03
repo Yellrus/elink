@@ -1,6 +1,16 @@
 <template>
   <div class="created-deal">
     <div class="created-deal__content">
+      <el-popover
+        placement="top-start"
+        transition="el-zoom-in-bottom"
+        trigger="hover"
+      >
+        Создать новое предложение
+        <div slot="reference" class="created-deal__close-wrap">
+          <el-button class="created-deal__close" type="primary" icon="el-icon-refresh-left" size="mini" circle plain @click="closeSuccessCard" />
+        </div>
+      </el-popover>
       <div class="created-deal__header">
         <h2 class="created-deal__heading">Предложение создано!</h2>
         <div class="created-deal__img">
@@ -93,6 +103,10 @@ export default {
         type: 'success',
         duration: 1500,
       });
+    },
+
+    closeSuccessCard() {
+      this.$emit('close');
     },
   },
 };
@@ -232,12 +246,20 @@ export default {
   &__btn-copy {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    z-index: 3;
   }
 
   &__deals {
     width: 100%;
     max-width: 355px;
     padding: 0 7px;
+  }
+
+  &__close-wrap {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 3;
   }
 }
 </style>

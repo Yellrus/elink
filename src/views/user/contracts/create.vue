@@ -208,11 +208,7 @@
 
         <el-row :gutter="50">
           <el-col type="flex" :xs="24" :sm="12" :md="12">
-            <el-form-item
-              label="Стоимость"
-              prop="Amount"
-              class="is-required"
-            >
+            <el-form-item label="Стоимость" prop="Amount" class="is-required">
               <el-input
                 v-model="model.Amount"
                 v-currency="options"
@@ -304,9 +300,11 @@
       </el-form>
     </el-card>
 
-    <el-card v-if="createDone" class="box-card box-card--success">
-      <SuccessCreated :deal="deal" />
-    </el-card>
+    <transition name="el-zoom-in-center">
+      <el-card v-if="createDone" class="box-card box-card--success">
+        <SuccessCreated :deal="deal" @close="createDone = false" />
+      </el-card>
+    </transition>
 
     <AddNewPaymethod @close:dialog="closeDialogAddNewPayMethod" />
   </div>
@@ -318,12 +316,12 @@ import { CurrencyDirective, parseCurrency } from 'vue-currency-input';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
 import CreditCardBlackLogo from '../../../../public/creditCardBlack.svg';
 import {
+  CreateAmountInfo,
+  CreateCommissionInfo,
   SelectOption,
   SuccessCreated,
-  CreateCommissionInfo,
-  CreateAmountInfo,
 } from './components';
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import PaymentWmp from '@/components/PaymentWmp';
 import PaymentCard from '@/components/PaymentCard';
 import { getCommission } from '@/api/contract';
@@ -364,6 +362,14 @@ export default {
         }
       }
     };
+    const defaultDate = () => {
+      const DAYS = 7;
+      const date = new Date();
+      return new Date(
+        date.setTime(date.getTime() + DAYS * 24 * 60 * 60 * 1000)
+      );
+    };
+
     return {
       pickerOptions: {
         disabledDate(time) {
@@ -385,7 +391,7 @@ export default {
       MaxAmount: 0,
       model: {
         Name: '',
-        Duration: '',
+        Duration: defaultDate() || '',
         Count: 1,
         Description: '',
         CategoryId: 2,
