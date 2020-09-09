@@ -102,6 +102,24 @@ export const constantRoutes = [
   },
 
   {
+    path: '/transactions',
+    component: Layout,
+    redirect: '/transactions',
+    meta: {
+      title: 'Транзакции',
+      icon: 'guide',
+    },
+    children: [
+      {
+        path: '/transactions',
+        component: () => import('@/views/transactions/list'),
+        name: 'TransactionsList',
+        meta: { title: 'Транзакции', icon: 'guide', breadcrumb: false , noCache: true },
+      },
+    ],
+  },
+
+  {
     path: '/contract/:id',
     component: () => import('@/views/pay-confirm/index'),
     name: 'Pay Confirm',

@@ -33,6 +33,7 @@
           ref="cardNumberInput"
           v-model="model.Purse"
           v-mask="'#### #### #### ####'"
+          type="tel"
           :autofocus="true"
           class="credit-card__form-input"
         />
@@ -170,7 +171,6 @@ export default {
             brandLogoOriginalSvg,
             bankName,
           };
-
 
           this.$nextTick(() => {
             this.$refs.cardNumberInput.focus();

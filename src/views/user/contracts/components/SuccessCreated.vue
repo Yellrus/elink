@@ -8,13 +8,21 @@
       >
         Создать новое предложение
         <div slot="reference" class="created-deal__close-wrap">
-          <el-button class="created-deal__close" type="primary" icon="el-icon-refresh-left" size="mini" circle plain @click="closeSuccessCard" />
+          <el-button
+            class="created-deal__close"
+            type="primary"
+            icon="el-icon-refresh-left"
+            size="mini"
+            circle
+            plain
+            @click="closeSuccessCard"
+          />
         </div>
       </el-popover>
       <div class="created-deal__header">
         <h2 class="created-deal__heading">Предложение создано!</h2>
         <div class="created-deal__img">
-          <el-icon class="created-deal__icon el-icon-success"></el-icon>
+          <el-icon class="created-deal__icon el-icon-success" />
         </div>
         <p class="created-deal__desc">
           Предложение <br />
@@ -29,7 +37,9 @@
         </p>
         <p class="created-deal__desc">
           будет активно до
-          <span class="created-deal__deal-name">{{ deal.Duration | humansDateFormat }}</span>
+          <span class="created-deal__deal-name">{{
+            deal.Duration | humansDateFormat
+          }}</span>
         </p>
       </div>
 
