@@ -292,7 +292,10 @@ export default {
 
           this.getCurrentCommission();
         })
-        .catch(() => (this.loading = false))
+        .catch(() => {
+          this.$router.push(`/contracts`);
+          this.loading = false;
+        })
         .finally(() => {
           this.loading = false;
         });
@@ -317,7 +320,9 @@ export default {
           });
           this.fetchContract();
         })
-        .catch(() => (this.closingContract = false))
+        .catch(() => {
+          this.closingContract = false;
+        })
         .finally(() => (this.closingContract = false));
     },
 

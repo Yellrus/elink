@@ -261,6 +261,9 @@ export default {
         .then(data => {
           this.dealDetail = data;
         })
+        .catch(() => {
+          this.$router.push(`/deals`);
+        })
         .finally(() => {
           this.loading = false;
         });
