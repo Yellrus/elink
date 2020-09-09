@@ -13,7 +13,8 @@ Vue.use(VueSocialSharing);
 import { hello } from '@/mixins/common';
 import './permission';
 import { getToken } from '@/utils/auth'; // permission control
-import * as filters from './filters'; // global filters
+import * as filters from './filters';
+import { setRedirectPath } from './utils/redirectPath'; // global filters
 
 // register global utility filters
 Object.keys(filters).forEach(key => {
@@ -33,11 +34,22 @@ async function initState(app) {
     resolve();
   });
 }
-
+const blackRouteList = ['/login', '/auth-work', '/'];
 new Vue({
   mixins: [hello],
   router,
   store,
+  watch: {
+    $route: {
+      handler: function(route) {
+        const routePath = route.path;
+        if (routePath && !blackRouteList.includes(routePath)) {
+          setRedirectPath(routePath);
+        }
+      },
+      immediate: true,
+    },
+  },
   async created() {
     await initState(this).then(() => {});
   },

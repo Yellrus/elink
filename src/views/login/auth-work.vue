@@ -8,26 +8,43 @@
 import { param2Obj } from '@/utils/common';
 import { Message } from 'element-ui';
 import { getToken } from '@/utils/auth';
-import LoadingData from '../../components/LoadingData/index';
+import LoadingData from '@/components/LoadingData';
+import { getRedirectPath } from '@/utils/redirectPath';
 
 export default {
   name: 'AuthWork',
   components: { LoadingData },
   beforeCreate() {
+    const redirectPath = getRedirectPath();
     if (getToken()) {
-      this.$router.replace('/');
+      if (!redirectPath) {
+        this.$router.replace('/');
+        return;
+      }
+      this.$router.push({
+        path: redirectPath,
+      });
       return;
     }
     (async () => {
       try {
-        let urlData = JSON.parse(param2Obj(window.location.href).authData);
+        const urlData = JSON.parse(param2Obj(window.location.href).authData);
+
         await this.$store.dispatch('user/login', urlData);
         await this.$store.dispatch('profile/getInfo');
         await this.$store.dispatch('dictionary/getDictionary');
 
         let wmid = this.$store.getters.wmid;
 
-        wmid && this.$router.replace('/');
+        if (wmid) {
+          if (!redirectPath) {
+            this.$router.replace('/');
+            return;
+          }
+          this.$router.push({
+            path: redirectPath,
+          });
+        }
       } catch (err) {
         Message({
           message: err || 'Error',
