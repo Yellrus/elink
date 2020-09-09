@@ -60,9 +60,7 @@
         </div>
       </div>
       <div class="user-info__btn-passport">
-        <el-button :loading="loadingDataIframe" @click="handlePassportData"
-          >Мои личные данные</el-button
-        >
+        <iframe-data />
       </div>
 
       <div
@@ -119,14 +117,13 @@
 
 <script>
 import UserAvatar from '@/components/UserAvatar/index';
-import { mapActions, mapGetters, mapState } from 'vuex';
-import openWindow from '@/utils/open-window';
+import { mapGetters, mapState } from 'vuex';
+import IframeData from './IframeData';
 
 export default {
   name: 'UserShortInfo',
-  components: { UserAvatar },
+  components: { IframeData, UserAvatar },
   data: () => ({
-    loadingDataIframe: false,
     shortInfo: {
       icon: 'el-icon-phone-outline',
       label: 'Телефон',
@@ -146,14 +143,6 @@ export default {
   },
 
   methods: {
-    ...mapActions('profile', ['getPassportDataLink']),
-    async handlePassportData() {
-      this.loadingDataIframe = true;
-      const url = await this.getPassportDataLink();
-      this.loadingDataIframe = false;
-      openWindow(url, 'Escrow Merchant личные данные');
-    },
-
     getStatus(status) {
       let statusNumber = Number(status);
 
