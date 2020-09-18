@@ -11,10 +11,12 @@ import {
 
 const state = {
   deals: [],
+  dealsCSV: [],
   deal: {},
   dealDetail: {},
   disputeDeal: {},
   statuses: {},
+  loadingCSV: false,
 };
 
 const mutations = {
@@ -30,6 +32,13 @@ const mutations = {
     state.deals = deals;
   },
 
+  SET_DEALS_CSV: (state, dealsCSV) => {
+    state.dealsCSV = dealsCSV.map(item => ({
+      ...item,
+      Contract: item.Contract.Name,
+    }));
+  },
+
   SET_STATUSES: (state, statuses) => {
     state.statuses = statuses;
   },
@@ -37,16 +46,41 @@ const mutations = {
   SET_DISPUTE_DEAL: (state, disputeDeal) => {
     state.disputeDeal = disputeDeal;
   },
+
+  LOADING_CSV: (state, payload) => (state.loadingCSV = payload),
 };
 
 const actions = {
   getDeals({ commit }, data) {
     return new Promise((resolve, reject) => {
       getDeals(data)
-        .then(deals => {
-          commit('SET_DEALS', deals);
+        .then(response => {
+          const { Items } = response;
+          commit('SET_DEALS', Items);
 
-          resolve(deals);
+          resolve(response);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || error.Error || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  getDealsCSV({ commit }, data) {
+    commit('LOADING_CSV', true);
+    return new Promise((resolve, reject) => {
+      getDeals(data)
+        .then(response => {
+          const { Items } = response;
+          commit('SET_DEALS_CSV', Items);
+          commit('LOADING_CSV', false);
+
+          resolve(response);
         })
         .catch(error => {
           Message({

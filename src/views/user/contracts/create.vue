@@ -5,7 +5,29 @@
         <div class="box-card__header-icon">
           <el-icon class="el-icon-sell" />
         </div>
-        <h2>Создание предложения</h2>
+
+        <template v-if="modelIsTemplate">
+          <h2 class="box-card__heading">
+            Создание предложения по
+            <el-popover
+              placement="top-start"
+              transition="el-zoom-in-bottom"
+              trigger="hover"
+              class="hover-template"
+            >
+              <contract-info
+                v-if="modelIsTemplate"
+                :contract="modelIsTemplate"
+              />
+              <div slot="reference">
+                шаблону
+              </div>
+            </el-popover>
+          </h2>
+        </template>
+        <template v-else>
+          <h2>Создание предложения</h2>
+        </template>
       </div>
       <loading-data v-if="submitting" />
       <el-form
@@ -328,12 +350,14 @@ import { getCommission } from '@/api/contract';
 import _debounce from 'lodash.debounce';
 import { getLastAddedPaymethod } from '@/utils/profile';
 import LoadingData from '@/components/LoadingData';
+import ContractInfo from '../../templates/components/ContractInfo';
 
 export default {
   directives: {
     currency: CurrencyDirective,
   },
   components: {
+    ContractInfo,
     CreateCommissionInfo,
     CreateAmountInfo,
     LoadingData,
@@ -389,6 +413,7 @@ export default {
       CardCommission: 0,
       MinAmount: 0,
       MaxAmount: 0,
+      modelIsTemplate: null,
       model: {
         Name: '',
         Duration: defaultDate() || '',
@@ -569,6 +594,32 @@ export default {
   },
 
   created() {
+    this.modelIsTemplate = this.$route.params.contract;
+
+    if (this.modelIsTemplate) {
+      this.$set(this.model, 'Amount', String(this.modelIsTemplate.Amount));
+      this.$set(this.model, 'Name', this.modelIsTemplate.Name);
+      this.$set(this.model, 'Description', this.modelIsTemplate.Description);
+      this.$set(this.model, 'Count', this.modelIsTemplate.Count);
+      this.modelIsTemplate.WmpPurse &&
+        this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
+
+      if (this.modelIsTemplate.Card) {
+        const cardGuid =
+          this.paymethods.length > 0 &&
+          this.paymethods.find(item => item.Purse === this.modelIsTemplate.Card)
+            .Guid;
+
+        cardGuid && this.$set(this.model, 'CardPurseId', cardGuid);
+      }
+
+      this.paymethodTypeCards = !!this.modelIsTemplate.Card;
+
+      if (this.modelIsTemplate.WmpPurse) {
+        this.paymethodTypeWmp = true;
+      }
+    }
+
     let checkLastAddedCard = getLastAddedPaymethod();
 
     if (checkLastAddedCard) {
@@ -579,6 +630,10 @@ export default {
   },
 
   mounted() {
+    if (this.modelIsTemplate) {
+      this.getCurrentCommission();
+      return;
+    }
     if (this.wmpPurse) {
       this.$set(this.model, 'WmpPurseId', this.wmpPurse.Guid);
       this.paymethodTypeWmp = true;
@@ -751,5 +806,20 @@ export default {
 .amount-input {
   font-size: 15px;
   font-weight: 500;
+}
+
+.hover-template {
+  margin-left: 4px;
+  cursor: pointer;
+
+  .el-popover__reference {
+    color: #409eff;
+  }
+
+  &:hover {
+    .el-popover__reference {
+      color: #66b1ff;
+    }
+  }
 }
 </style>

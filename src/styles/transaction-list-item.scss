@@ -82,8 +82,9 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-right: 30px;
+    margin-right: 20px;
     flex-shrink: 0;
+    min-width: 53px;
 
     @media (max-width: $mq-tablet-vertical) {
       flex-direction: row;

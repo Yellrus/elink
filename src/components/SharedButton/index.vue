@@ -1,14 +1,14 @@
 <template>
-  <el-dropdown>
+  <el-dropdown trigger="click">
     <el-button
       class="share-button"
       icon="el-icon-share"
-      circle
       plain
       :disabled="isDisabled"
-      size="small"
+      size="medium"
       type="primary"
-    />
+      >Поделиться</el-button
+    >
     <el-dropdown-menu slot="dropdown">
       <div class="ShareNetworks">
         <ShareNetwork
@@ -20,7 +20,9 @@
           :title="sharing.title"
           :description="sharing.description"
         >
-          <el-dropdown-item class="ShareNetworks__dropdownItem">{{ network.name }}</el-dropdown-item>
+          <el-dropdown-item class="ShareNetworks__dropdownItem">{{
+            network.name
+          }}</el-dropdown-item>
         </ShareNetwork>
       </div>
     </el-dropdown-menu>

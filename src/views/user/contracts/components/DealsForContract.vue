@@ -183,7 +183,7 @@ export default {
       this.total = Total;
       setTimeout(() => {
         this.loadingDeals = false;
-      }, 300);
+      }, 0);
     },
   },
 };

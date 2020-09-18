@@ -1,0 +1,12 @@
+@import '@/styles/variables.scss';
+
+.page-csv-btn {
+  position: absolute;
+  top: 12px;
+  right: 120px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+  @media (max-width: $mq-mobile) {
+    top: 34px;
+  }
+}

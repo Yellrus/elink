@@ -4,6 +4,15 @@
     <div class="page-container__header">
       <h1 class="page-contracts-heading">Мои предложения</h1>
 
+      <div class="page-csv-btn">
+        <btn-download-csv
+          :items="contractsCSV"
+          :name-file="`contracts`"
+          :loading="loadingCSV"
+          :handle-api="fetchContractsCSV"
+        />
+      </div>
+
       <el-badge class="filter-btn" is-dot :hidden="!isBadgeActiveFilter">
         <el-button size="small" plain @click="toggleFilter">
           <el-icon class="el-icon-s-operation" />
@@ -178,7 +187,11 @@
             :key="contract.Id"
             class="contracts__item"
           >
-            <list-item :contract="contract" @close="closeContract" />
+            <list-item
+              :contract="contract"
+              @close="closeContract"
+              @dialog-add-template="openDialogAddTemplate"
+            />
           </div>
         </div>
 
@@ -198,6 +211,22 @@
         />
       </template>
     </div>
+
+    <el-dialog
+      title="Создание шаблона"
+      :destroy-on-close="true"
+      :visible.sync="dialogAddTemplate"
+      :width="device === 'mobile' ? '90%' : '30%'"
+      top="8vh"
+      class="dialog"
+      center
+    >
+      <loading-data v-if="submittingAddTemplate" />
+      <form-add-contract-template
+        :current-contract="currentDialogOpenedContract"
+        @submit="addTemplate"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -214,10 +243,14 @@ import SelectOption from './components/SelectOption';
 import PaymentCard from '@/components/PaymentCard';
 import PaymentWmp from '@/components/PaymentWmp';
 import { resetForm } from '@/mixins/common';
+import FormAddContractTemplate from './components/FormAddContractTemplate';
+import BtnDownloadCsv from '../../../components/CvcDownload/index';
 
 export default {
   name: 'Contracts',
   components: {
+    BtnDownloadCsv,
+    FormAddContractTemplate,
     ListItem,
     PaymentWmp,
     PaymentCard,
@@ -239,7 +272,10 @@ export default {
     isActiveFilter: false,
     closingContract: false,
     loadingData: false,
+    dialogAddTemplate: false,
+    submittingAddTemplate: false,
     isBadgeActiveFilter: false,
+    currentDialogOpenedContract: null,
     paymethodList: [
       {
         Id: 1,
@@ -274,6 +310,8 @@ export default {
     ...mapState({
       device: state => state.app.device,
       categoryList: state => state.dictionary.categories,
+      contractsCSV: state => state.contract.contractsCSV,
+      loadingCSV: state => state.contract.loadingCSV,
     }),
   },
 
@@ -310,7 +348,12 @@ export default {
   },
 
   methods: {
-    ...mapActions('contract', ['getContracts', 'contractClose']),
+    ...mapActions('contract', [
+      'getContracts',
+      'getContractsCSV',
+      'contractClose',
+      'createTemplate',
+    ]),
 
     fetchDebounceGetContracts: _debounce(function() {
       this.fetchContracts(true);
@@ -334,7 +377,15 @@ export default {
       this.total = Total;
       setTimeout(() => {
         this.loadingData = false;
-      }, 300);
+      }, 0);
+    },
+
+    async fetchContractsCSV() {
+      await this.getContractsCSV({
+        limit: 10000000,
+        offset: 0,
+        ...this.filterQuery,
+      });
     },
 
     closeContract(Id) {
@@ -352,6 +403,26 @@ export default {
         .finally(() => (this.closingContract = false));
     },
 
+    addTemplate(data) {
+      this.submittingAddTemplate = true;
+      this.createTemplate(data)
+        .then(() => {
+          this.$message({
+            message: 'Шаблон успешно создан!',
+            type: 'success',
+            duration: 1500,
+          });
+          this.dialogAddTemplate = false;
+        })
+        .catch(() => (this.submittingAddTemplate = false))
+        .finally(() => (this.submittingAddTemplate = false));
+    },
+
+    openDialogAddTemplate(contract) {
+      this.currentDialogOpenedContract = { ...contract };
+      this.dialogAddTemplate = true;
+    },
+
     toggleFilter() {
       this.isActiveFilter = !this.isActiveFilter;
     },
@@ -366,6 +437,7 @@ export default {
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 @import '@/styles/filter-data.scss';
+@import '@/styles/page-csv-btn.scss';
 
 .contracts {
   max-width: 1100px;

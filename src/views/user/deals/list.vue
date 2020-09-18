@@ -3,6 +3,16 @@
     <!-- Header -->
     <div class="page-container__header">
       <h1 class="page-contracts-heading">Мои продажи</h1>
+
+      <div class="page-csv-btn">
+        <btn-download-csv
+          :items="dealsCSV"
+          :name-file="`deals`"
+          :loading="loadingCSV"
+          :handle-api="fetchDealsCSV"
+        />
+      </div>
+
       <el-badge class="filter-btn" is-dot :hidden="!isBadgeActiveFilter">
         <el-button size="small" plain @click="toggleFilter">
           <el-icon class="el-icon-s-operation" />
@@ -200,6 +210,7 @@
         @pagination="fetchDeals(false)"
       />
     </div>
+
   </div>
 </template>
 
@@ -215,10 +226,12 @@ import ListItem from './components/ListItem';
 import _debounce from 'lodash.debounce';
 import { resetForm } from '@/mixins/common';
 import { mask } from 'vue-the-mask';
+import BtnDownloadCsv from '../../../components/CvcDownload/index';
 
 export default {
   name: 'Deals',
   components: {
+    BtnDownloadCsv,
     ListItem,
     LoadingData,
     DataEmpty,
@@ -271,6 +284,8 @@ export default {
     ...mapGetters(['device']),
     ...mapState({
       dealsStatuses: state => state.deal.statuses,
+      dealsCSV: state => state.deal.dealsCSV,
+      loadingCSV: state => state.deal.loadingCSV,
     }),
 
     statuses() {
@@ -318,7 +333,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('deal', ['getDeals', 'dealCancel', 'getDealsStatus']),
+    ...mapActions('deal', ['getDeals', 'dealCancel', 'getDealsStatus', 'getDealsCSV']),
 
     fetchDebounceGetDeals: _debounce(function() {
       this.fetchDeals(true);
@@ -342,7 +357,15 @@ export default {
       this.total = Total;
       setTimeout(() => {
         this.loadingData = false;
-      }, 300);
+      }, 0);
+    },
+
+    async fetchDealsCSV() {
+      await this.getDealsCSV({
+        limit: 10000000,
+        offset: 0,
+        ...this.filterQuery,
+      });
     },
 
     cancelDeal(Id) {
@@ -374,6 +397,7 @@ export default {
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 @import '@/styles/filter-data.scss';
+@import '@/styles/page-csv-btn.scss';
 
 .deals {
   max-width: 1100px;

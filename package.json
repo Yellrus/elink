@@ -21,6 +21,7 @@
     "sanitize.css": "^11.0.1",
     "vue": "^2.6.11",
     "vue-currency-input": "^1.20.3",
+    "vue-json-csv": "^1.2.11",
     "vue-router": "^3.4.1",
     "vue-social-sharing": "^3.0.0-beta.11",
     "vue-the-mask": "^0.11.1",

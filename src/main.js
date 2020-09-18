@@ -7,8 +7,10 @@ import './plugins/element.js';
 import '@/styles/index.scss'; // global css
 import './plugins/dayjs';
 import VueSocialSharing from 'vue-social-sharing';
+import JsonCSV from 'vue-json-csv';
 
 Vue.use(VueSocialSharing);
+Vue.component('downloadCsv', JsonCSV);
 
 import { hello } from '@/mixins/common';
 import './permission';

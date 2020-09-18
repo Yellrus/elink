@@ -61,10 +61,6 @@
     }
   }
 
-  &__btn-icon {
-    width: 10px;
-  }
-
   &__body {
     width: 100%;
     display: flex;
@@ -87,6 +83,7 @@
     flex-direction: column;
     margin-right: 20px;
     flex-shrink: 0;
+    min-width: 53px;
 
     @media (max-width: $mq-tablet-vertical) {
       flex-direction: row;
@@ -298,6 +295,11 @@
     &--webmoney {
       width: 16px;
     }
+  }
+
+  &__Counts {
+    display: flex;
+    align-items: center;
   }
 
   &__Count {

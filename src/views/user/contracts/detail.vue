@@ -145,32 +145,67 @@
                 Скопировать ссылку
               </el-button>
 
-              <el-popconfirm
-                v-if="!contractDetail.IsClosed"
-                confirm-button-text="Подтвердить"
-                cancel-button-text="Отмена"
-                placement="top"
-                class="detail__btn-popconfirm"
-                :title="`Закрыть ${contractDetail.Name} ?`"
-                @onConfirm="closeContract(contractDetail.Id)"
-              >
-                <el-button
-                  slot="reference"
-                  size="small"
-                  type="danger"
-                  circle
-                  plain
-                >
-                  <closeIcon class="detail__btn-icon" />
-                </el-button>
-              </el-popconfirm>
+<!--              <el-popconfirm-->
+<!--                v-if="!contractDetail.IsClosed"-->
+<!--                confirm-button-text="Подтвердить"-->
+<!--                cancel-button-text="Отмена"-->
+<!--                placement="top"-->
+<!--                class="detail__btn-popconfirm"-->
+<!--                :title="`Закрыть ${contractDetail.Name} ?`"-->
+<!--                @onConfirm="closeContract(contractDetail.Id)"-->
+<!--              >-->
+<!--                <el-button-->
+<!--                  slot="reference"-->
+<!--                  size="small"-->
+<!--                  type="danger"-->
+<!--                  circle-->
+<!--                  plain-->
+<!--                >-->
+<!--                  <closeIcon class="detail__btn-icon" />-->
+<!--                </el-button>-->
+<!--              </el-popconfirm>-->
 
-              <el-tooltip v-else placement="top">
-                <div slot="content">Предложение закрыто</div>
-                <el-button type="info" size="small" circle plain>
-                  <closeIcon class="detail__btn-icon" />
-                </el-button>
-              </el-tooltip>
+<!--              <el-tooltip v-else placement="top">-->
+<!--                <div slot="content">Предложение закрыто</div>-->
+<!--                <el-button type="info" size="small" circle plain>-->
+<!--                  <closeIcon class="detail__btn-icon" />-->
+<!--                </el-button>-->
+<!--              </el-tooltip>-->
+
+              <menu-actions>
+                <template v-slot:dropdownItem>
+                  <el-dropdown-item v-if="!contractDetail.IsClosed">
+                    <el-popconfirm
+                      confirm-button-text="Подтвердить"
+                      cancel-button-text="Отмена"
+                      placement="top"
+                      :title="`Закрыть ${contractDetail.Name} ?`"
+                      @onConfirm="closeContract(contractDetail.Id)"
+                    >
+                      <el-button slot="reference" type="danger" plain size="medium">
+                        <closeIcon class="menu-actions__btn-icon" />
+                        Закрыть
+                      </el-button>
+                    </el-popconfirm>
+                  </el-dropdown-item>
+
+                  <!--          <el-dropdown-item>-->
+                  <!--            <el-button type="primary" size="medium" plain>-->
+                  <!--              <el-icon class="el-icon-edit" />-->
+                  <!--              Редактировать-->
+                  <!--            </el-button>-->
+                  <!--          </el-dropdown-item>-->
+
+                  <el-dropdown-item>
+                    <el-button type="primary" size="medium" plain @click="dialogAddTemplate = true">
+                      <el-icon class="el-icon-plus" />
+                      Создать шаблон
+                    </el-button>
+                  </el-dropdown-item>
+
+                </template>
+              </menu-actions>
+
             </div>
 
             <div v-if="!contractDetail.IsClosed" class="detail__social-sharing">
@@ -193,11 +228,27 @@
         </div>
       </template>
     </div>
+
+    <el-dialog
+      title="Создание шаблона"
+      :destroy-on-close="true"
+      :visible.sync="dialogAddTemplate"
+      :width="device === 'mobile' ? '90%' : '30%'"
+      top="8vh"
+      class="dialog"
+      center
+    >
+      <loading-data v-if="submittingAddTemplate" />
+      <form-add-contract-template
+        :current-contract="contractDetail"
+        @submit="addTemplate"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+  import { mapActions, mapState } from 'vuex';
 import clipboard from '@/directive/clipboard';
 import CreditCardLogo from '../../../../public/creditCard.svg';
 import WebmoneyLogo from '../../../../public/webmoney-logo.svg';
@@ -209,10 +260,14 @@ import SocialSharing from '@/components/SocialSharing';
 import { getCommission } from '@/api/contract';
 import DealsForContract from './components/DealsForContract';
 import { checkDate } from '@/mixins/common';
+import MenuActions from './components/MenuActions';
+  import FormAddContractTemplate from './components/FormAddContractTemplate';
 
 export default {
   name: 'ContractDetail',
   components: {
+    FormAddContractTemplate,
+    MenuActions,
     DealsForContract,
     SocialSharing,
     LoadingData,
@@ -233,9 +288,14 @@ export default {
     wmpCommission: null,
     loading: false,
     contractDetail: null,
+    submittingAddTemplate: false,
+    dialogAddTemplate: false,
   }),
 
   computed: {
+    ...mapState({
+      device: state => state.app.device,
+    }),
     host() {
       return location.host;
     },
@@ -282,7 +342,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('contract', ['getContract', 'contractClose']),
+    ...mapActions('contract', ['getContract', 'contractClose', 'createTemplate']),
 
     fetchContract() {
       this.loading = true;
@@ -326,6 +386,21 @@ export default {
         .finally(() => (this.closingContract = false));
     },
 
+    addTemplate(data) {
+      this.submittingAddTemplate = true;
+      this.createTemplate(data)
+        .then(() => {
+          this.$message({
+            message: 'Шаблон успешно создан!',
+            type: 'success',
+            duration: 1500,
+          });
+          this.dialogAddTemplate = false;
+        })
+        .catch(() => (this.submittingAddTemplate = false))
+        .finally(() => (this.submittingAddTemplate = false));
+    },
+
     checkDurationDate(durationDate) {
       return this.checkDate(durationDate);
     },
@@ -349,6 +424,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
+@import '@/styles/contract-list-item.scss';
 @import '@/styles/detail-layout.scss';
 @import '@/styles/detail.scss';
 

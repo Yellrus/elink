@@ -67,14 +67,8 @@
               </div>
             </el-popover>
             {{
-              item.Contract.Amount
-                | amountWithCommission(
-                  `${
-                    item.PayMethod === 2
-                      ? item.Contract.CardCommission
-                      : item.Contract.WmpCommission
-                  }`
-                )
+              item.Amount
+                | amountWithCommission(item.Commission)
                 | toThousandFilter
             }}
             ₽
@@ -184,4 +178,9 @@ export default {
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 @import '@/styles/contract-list-item.scss';
+
+.contract__btn-icon {
+  margin-left: 0;
+  margin-right: 0;
+}
 </style>

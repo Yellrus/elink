@@ -6,14 +6,22 @@
         <h1>
           История транзакций
         </h1>
-        <div class="page-search">
-          <el-input
-            v-model="listQuery.purseName"
-            clearable
-            placeholder="Поиск по номеру кошелька и карты"
-          >
-            <el-icon slot="prefix" class="el-icon-search page-search__icon" />
-          </el-input>
+        <div class="page-container__header-row">
+          <btn-download-csv
+            :items="transactionsCSV"
+            :name-file="`transactions`"
+            :loading="loadingCSV"
+            :handle-api="fetchTransactionsCSV"
+          />
+          <div class="page-search">
+            <el-input
+              v-model="listQuery.purseName"
+              clearable
+              placeholder="Поиск по номеру кошелька и карты"
+            >
+              <el-icon slot="prefix" class="el-icon-search page-search__icon" />
+            </el-input>
+          </div>
         </div>
       </div>
     </div>
@@ -62,10 +70,11 @@ import Pagination from '@/components/Pagination';
 import LoadingData from '@/components/LoadingData';
 import DataEmpty from '../../components/DataEmpty/index';
 import { ListItem } from './components';
+import BtnDownloadCsv from '../../components/CvcDownload/index';
 
 export default {
   name: 'Transactions',
-  components: { ListItem, DataEmpty, LoadingData, Pagination },
+  components: { BtnDownloadCsv, ListItem, DataEmpty, LoadingData, Pagination },
   data: () => ({
     loadingData: false,
     total: 0,
@@ -82,6 +91,8 @@ export default {
     ...mapGetters(['device']),
     ...mapState({
       dealsStatuses: state => state.deal.statuses,
+      transactionsCSV: state => state.transactions.transactionsCSV,
+      loadingCSV: state => state.transactions.loadingCSV,
     }),
   },
 
@@ -99,7 +110,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('transactions', ['getTransactions']),
+    ...mapActions('transactions', ['getTransactions', 'getTransactionsCSV']),
 
     fetchDebounceGetTransactions: _debounce(function() {
       this.fetchTransactions(true);
@@ -123,7 +134,15 @@ export default {
       this.total = Total;
       setTimeout(() => {
         this.loadingData = false;
-      }, 300);
+      }, 0);
+    },
+
+    async fetchTransactionsCSV() {
+      await this.getTransactionsCSV({
+        limit: 10000000,
+        offset: 0,
+        purseName: this.listQuery.purseName,
+      });
     },
   },
 };
@@ -149,7 +168,6 @@ export default {
   }
 
   &__item {
-
     &:not(:last-child) {
       margin-bottom: 20px;
     }
@@ -167,6 +185,7 @@ export default {
 }
 
 .page-contracts-heading {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -183,15 +202,22 @@ export default {
 }
 
 .page-search {
-  width: 100%;
-  max-width: 400px;
+  width: 400px;
+  margin-left: 20px;
 
   @media (max-width: $mq-mobile) {
     margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
   }
 
   &__icon {
     line-height: 35px;
   }
+}
+
+.page-container__header-row {
+  display: flex;
+  align-items: baseline;
 }
 </style>

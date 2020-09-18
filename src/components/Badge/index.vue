@@ -1,9 +1,14 @@
 <template>
-  <el-tooltip :content="hint" placement="top" effect="dark">
-    <div class="badge" :class="{ 'badge--empty': count === 0 }">
+  <el-popover
+    placement="top-start"
+    transition="el-zoom-in-bottom"
+    trigger="hover"
+  >
+    <span>{{ hint }}</span>
+    <div slot="reference" class="badge" :class="`badge--${getClassName}`">
       <div class="badge__label">{{ count }}</div>
     </div>
-  </el-tooltip>
+  </el-popover>
 </template>
 
 <script>
@@ -17,6 +22,26 @@ export default {
     hint: {
       type: String,
       default: '',
+    },
+    type: {
+      type: String,
+      default: '',
+    },
+  },
+
+  computed: {
+    getClassName() {
+      if (this.type === 'success') {
+        return 'success';
+      } else if (this.type === 'wait') {
+        return 'wait';
+      } else if (this.type === 'goods') {
+        return 'goods';
+      } else if (this.type === 'empty') {
+        return 'empty';
+      }
+
+      return '';
     },
   },
 };
@@ -88,6 +113,12 @@ $empty-color: #f44336;
     transform: translate(-50%, -50%);
   }
 
+  &:hover {
+    .badge__label {
+      opacity: 0.4;
+    }
+  }
+
   &--empty {
     background-color: rgba($empty-color, 0.2);
 
@@ -99,6 +130,22 @@ $empty-color: #f44336;
       text-shadow: 0 4px 8px #d7ccc8;
       color: #795548;
     }
+  }
+
+  &--success {
+    color: #4caf50;
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+    .badge__label {
+      color: currentColor;
+    }
+
+  }
+
+  &--wait {
+    color: #518fe1;
+    background-color: rgba(#93b5e1, 0.2);
+    border-color: rgba(#93b5e1, 0.4);
   }
 }
 

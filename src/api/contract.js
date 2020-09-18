@@ -63,3 +63,14 @@ export function createContract(data) {
     data,
   }).then(handleDataReceived);
 }
+
+export function createTemplateContract({ name, contractId }) {
+  return request({
+    url: 'api/templates/add',
+    method: 'get',
+    params: {
+      name,
+      contractId,
+    },
+  }).then(handleDataReceived);
+}

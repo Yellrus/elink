@@ -74,19 +74,38 @@
         <span class="contract__Currency">₽</span>
       </div>
 
-      <div class="contract__Count">
-        <Badge
-          :count="contract.Count"
-          :hint="
-            `${
-              contract.Count !== 0
-                ? contract.CategoryId === 2
-                  ? 'Количество товаров для продажи'
-                  : 'Количество услуг для продажи'
-                : 'Нет в наличии'
-            }`
-          "
-        />
+      <div class="contract__Counts">
+        <div class="contract__Count">
+          <Badge
+            :count="contract.SuccessfulCount"
+            :type="'success'"
+            :hint="'Успешных продаж'"
+          />
+        </div>
+
+        <div class="contract__Count">
+          <Badge
+            :count="contract.WaitingCount"
+            :type="'wait'"
+            :hint="'Ожидающих выплат'"
+          />
+        </div>
+
+        <div class="contract__Count">
+          <Badge
+            :count="contract.Count"
+            :type="contract.Count === 0 ? 'empty' : 'goods'"
+            :hint="
+              `${
+                contract.Count !== 0
+                  ? contract.CategoryId === 2
+                    ? 'Количество товаров для продажи'
+                    : 'Количество услуг для продажи'
+                  : 'Нет в наличии'
+              }`
+            "
+          />
+        </div>
       </div>
 
       <div class="contract__Duration">
@@ -130,39 +149,54 @@
           class="contract__BtnCopy"
         />
       </div>
-      <div class="contract__ActionsItem">
-        <shared-button
-          :is-disabled="contract.IsClosed"
-          :sharing="{
-            url: `${host}/contract/${contract.Id}`,
-            title: contract.Name,
-            description: contract.Description,
-          }"
-        />
-      </div>
+      <menu-actions>
+        <template v-slot:dropdownItem>
+          <el-dropdown-item v-if="!contract.IsClosed">
+            <el-popconfirm
+              confirm-button-text="Подтвердить"
+              cancel-button-text="Отмена"
+              placement="top"
+              :title="`Закрыть ${contract.Name} ?`"
+              @onConfirm="closeContract(contract.Id)"
+            >
+              <el-button slot="reference" type="danger" plain size="medium">
+                <closeIcon class="menu-actions__btn-icon" />
+                Закрыть
+              </el-button>
+            </el-popconfirm>
+          </el-dropdown-item>
 
-      <div class="contract__ActionsItem">
-        <el-popconfirm
-          v-if="!contract.IsClosed"
-          confirm-button-text="Подтвердить"
-          cancel-button-text="Отмена"
-          placement="top"
-          class="contract__btn-popconfirm"
-          :title="`Закрыть ${contract.Name} ?`"
-          @onConfirm="closeContract(contract.Id)"
-        >
-          <el-button slot="reference" size="small" type="danger" circle plain>
-            <closeIcon class="contract__btn-icon" />
-          </el-button>
-        </el-popconfirm>
+<!--          <el-dropdown-item>-->
+<!--            <el-button type="primary" size="medium" plain>-->
+<!--              <el-icon class="el-icon-edit" />-->
+<!--              Редактировать-->
+<!--            </el-button>-->
+<!--          </el-dropdown-item>-->
 
-        <el-tooltip v-else placement="top">
-          <div slot="content">Предложение закрыто</div>
-          <el-button type="info" size="small" circle plain>
-            <closeIcon class="contract__btn-icon" />
-          </el-button>
-        </el-tooltip>
-      </div>
+          <el-dropdown-item>
+            <el-button
+              type="primary"
+              size="medium"
+              plain
+              @click="openDialogAddTemplate(contract)"
+            >
+              <el-icon class="el-icon-plus" />
+              Создать шаблон
+            </el-button>
+          </el-dropdown-item>
+
+          <el-dropdown-item v-if="!contract.IsClosed">
+            <shared-button
+              :is-disabled="contract.IsClosed"
+              :sharing="{
+                url: `${host}/contract/${contract.Id}`,
+                title: contract.Name,
+                description: contract.Description,
+              }"
+            />
+          </el-dropdown-item>
+        </template>
+      </menu-actions>
     </div>
   </div>
 </template>
@@ -178,10 +212,12 @@ import Badge from '@/components/Badge';
 import Arrow from '@/components/Arrow';
 import { checkDate } from '@/mixins/common';
 import { mapState } from 'vuex';
+import MenuActions from './MenuActions';
 
 export default {
   name: 'ListItem',
   components: {
+    MenuActions,
     Status,
     Arrow,
     Badge,
@@ -200,6 +236,9 @@ export default {
       default: () => ({}),
     },
   },
+  data: () => ({
+    dialogAddTemplate: false,
+  }),
   computed: {
     ...mapState({
       device: state => state.app.device,
@@ -213,6 +252,11 @@ export default {
     closeContract(id) {
       this.$emit('close', id);
     },
+
+    openDialogAddTemplate(contract) {
+      this.$emit('dialog-add-template', contract);
+    },
+
     clipboardSuccess() {
       this.$message({
         message: 'Ссылка для продажи скопирована!',

@@ -48,6 +48,7 @@ export const constantRoutes = [
       {
         path: 'create',
         component: () => import('@/views/user/contracts/create'),
+        props: true,
         name: 'UserContractCreate',
         meta: { title: 'Создать', icon: 'edit-outline', noCache: true },
       },
@@ -97,6 +98,21 @@ export const constantRoutes = [
           noCache: true,
         },
         hidden: true,
+      },
+    ],
+  },
+
+  {
+    path: '/templates',
+    component: Layout,
+    redirect: '/templates',
+    meta: { title: 'Мои шаблоны', icon: 'star-off' },
+    children: [
+      {
+        path: '/templates',
+        component: () => import('@/views/templates/list'),
+        name: 'UserContractTemplates',
+        meta: { title: 'Мои шаблоны', icon: 'star-off', breadcrumb: false },
       },
     ],
   },

@@ -43,7 +43,7 @@
                     placement="top-start"
                   >
                     <WebmoneyLogo
-                      class="detail__paymethod detail__paymethod--webmoney"
+                      class="detail__paymethod detail__paymethod-icon--webmoney"
                     />
                   </el-tooltip>
 
@@ -54,7 +54,7 @@
                     placement="top-start"
                   >
                     <CreditCardLogo
-                      class="detail__paymethod detail__paymethod--card"
+                      class="detail__paymethod detail__paymethod-icon--card"
                     />
                   </el-tooltip>
 
@@ -91,24 +91,14 @@
               </div>
               <span class="detail__title">Коммисия</span>
               <div class="detail__commission">
-                {{
-                  (dealDetail.PayMethod === 2
-                    ? dealDetail.Contract.CardCommission
-                    : dealDetail.Contract.WmpCommission) | toThousandFilter
-                }}
+                {{ dealDetail.Commission | toThousandFilter }}
                 ₽
               </div>
               <span class="detail__title">Сумма к получению</span>
               <div class="detail__amount-withdraw">
                 {{
                   dealDetail.Contract.Amount
-                    | amountWithCommission(
-                      `${
-                        dealDetail.PayMethod === 2
-                          ? dealDetail.Contract.CardCommission
-                          : dealDetail.Contract.WmpCommission
-                      }`
-                    )
+                    | amountWithCommission(dealDetail.Commission)
                     | toThousandFilter
                 }}
                 ₽
@@ -156,7 +146,7 @@
 
             <div class="detail__closing">
               <el-icon class="el-icon-info" />
-              <template v-if="dealDetail.Status !== 5">
+              <template v-if="dealDetail.Status !== 5 && dealDetail.Status !== 6">
                 <span class="detail__closing-title"
                   >Поступление средств
                   {{
@@ -172,10 +162,17 @@
                 </div>
               </template>
 
-              <template v-else>
+              <template v-if="dealDetail.Status === 6">
+                <span class="detail__closing-title">
+                  Сделка расторгнута по решению арбитража. <br />
+                  Будет осуществлен возврат средств покупателю
+                </span>
+              </template>
+
+              <template v-if="dealDetail.Status === 5">
                 <span class="detail__closing-title">
                   Сделка по продаже находится в арбитраже.<br />
-                  Выплата произойдет если арбитраж будет решен в вашу пользу.
+                  Выплата произойдет, если арбитраж будет решен в вашу пользу.
                 </span>
               </template>
             </div>
@@ -364,6 +361,16 @@ export default {
     margin-right: 10px;
     margin-bottom: 20px;
     color: #5d6b85;
+  }
+
+  &__paymethod-icon {
+    width: 20px;
+    flex-shrink: 0;
+    margin-right: 5px;
+
+    &--webmoney {
+      width: 18px;
+    }
   }
 
   &__close-btn {

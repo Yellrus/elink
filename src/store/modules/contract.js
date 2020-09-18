@@ -5,13 +5,16 @@ import {
   getContract,
   getContractExtended,
   closeContract,
+  createTemplateContract,
 } from '@/api/contract';
 
 const state = {
   deal: {},
   contracts: [],
+  contractsCSV: [],
   contract: {},
   contractDetail: {},
+  loadingCSV: false,
 };
 
 const mutations = {
@@ -23,6 +26,10 @@ const mutations = {
     state.contracts = contracts;
   },
 
+  SET_CONTRACTS_CSV: (state, contractsCSV) => {
+    state.contractsCSV = contractsCSV;
+  },
+
   SET_CONTRACT: (state, contract) => {
     state.contract = contract;
   },
@@ -30,6 +37,8 @@ const mutations = {
   SET_CONTRACT_DETAIL: (state, contract) => {
     state.contract = contract;
   },
+
+  LOADING_CSV: (state, payload) => (state.loadingCSV = payload),
 };
 
 const actions = {
@@ -37,9 +46,26 @@ const actions = {
     return new Promise((resolve, reject) => {
       createContract(data)
         .then(response => {
-
           commit('SET_DEAL', 'true');
 
+          resolve(response);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || error.Error || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  createTemplate({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      createTemplateContract(data)
+        .then(response => {
           resolve(response);
         })
         .catch(error => {
@@ -91,11 +117,32 @@ const actions = {
     });
   },
 
+  getContractsCSV({ commit }, data) {
+    commit('LOADING_CSV', true);
+    return new Promise((resolve, reject) => {
+      getContracts(data)
+        .then(response => {
+          const { Items } = response;
+          commit('SET_CONTRACTS_CSV', Items);
+          commit('LOADING_CSV', false);
+
+          resolve(response);
+        })
+        .catch(error => {
+          Message({
+            message: error.Description || error.Error || 'Error',
+            type: 'error',
+            duration: 3 * 1000,
+          });
+          reject(error);
+        });
+    });
+  },
+
   getContract({ commit }, data) {
     return new Promise((resolve, reject) => {
       getContract(data)
         .then(contract => {
-
           commit('SET_CONTRACT_DETAIL', contract);
 
           resolve(contract);
@@ -115,7 +162,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getContractExtended(data)
         .then(contract => {
-
           commit('SET_CONTRACT', contract);
 
           resolve(contract);
